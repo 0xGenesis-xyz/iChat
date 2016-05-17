@@ -1,0 +1,64 @@
+//
+   Created by Sylvanus on 3/22/16.
+
+extends ../layout
+
+block content
+    script.
+        $(document).ready(function() {
+            $("img.img-circle#avatarBtn").bind("click", function() {
+                document.getElementById('showProfile').click()
+            })
+        })
+    .modal.fade#profileModal(tabindex="-1" role="dialog" aria-labelledby="profileModalLabel")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    .media(style="padding: 30px")
+                        .media-body
+                            h2 Sylvanus
+                            p(style="padding: 0 20px 0 0") あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。
+                        .media-right
+                            img.img-circle(width="120" height="120" src="images/TS.jpg")
+                .modal-body
+                    div(style="padding: 10px 100px")
+                        table
+                            tr
+                                td.text-right Email
+                                td &nbsp &nbsp
+                                td sylvanuszhy@gmail.com
+                            tr
+                                td.text-right Gender
+                                td &nbsp &nbsp
+                                td Male
+                            tr
+                                td.text-right Birthday
+                                td &nbsp &nbsp
+                                td July 1
+                            tr
+                                td.text-right Location
+                                td &nbsp &nbsp
+                                td Hangzhou
+                .modal-footer
+                    button.btn.btn-default(type="button" data-dismiss="modal") Close
+    #wrapper
+        #sidebar-wrapper
+            ul.sidebar-nav
+                li.sidebar-brand
+                    .pull-right(style="padding: 10px")
+                        a(href="/profile")
+                            i.icon-gear
+                    button#showProfile(type="button" hidden data-toggle="modal" data-target="#profileModal")
+                    div(width="200" height="140" style="padding: 60px 60px 30px")
+                        img.img-circle#avatarBtn(width="80" height="80" src="images/TS.jpg")
+                    p.text-center Sylvanus
+                    p.text-center(style="font-size: 12px") sylvanuszhy@gmail.com
+                li
+                    a(href="/friend") Friends
+                li
+                    a(href="/conversation") Conversations
+                li
+                    a(href="#") Subscriptions
+        #page-content-wrapper
+            //.container-fluid
+            block detail

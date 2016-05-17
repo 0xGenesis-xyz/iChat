@@ -1,0 +1,103 @@
+//
+   Created by Sylvanus on 4/3/16.
+
+extends sidebarLayout
+
+block detail
+    script.
+        $(document).ready(function() {
+            $("i.icon-plus#addBtn").bind("click", function() {
+                document.getElementById('addFriend').click()
+            })
+        })
+    .modal.fade#addModal(tabindex="-1" role="dialog" aria-labelledby="addModalLabel")
+        .modal-dialog.modal-sm(role="document")
+            .modal-content
+                .modal-header
+                    h4.modal-title Add a Friend
+                form(method="POST" action="/friend/addFriend")
+                    .modal-body(style="padding: 10px 30px")
+                        .form-group
+                            label.control-label Add a friend by name or email
+                            input.form-control(type="text")
+                        .form-group
+                            label.control-label Choose a group
+                            select.form-control.input-sm#forgroup
+                                option(value="Category 1") Option 1
+                                option(value="Category 2") Option 2
+                                option(value="Category 3") Option 3
+                    .modal-footer(style="padding: 0 30px 20px")
+                        button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+                        button.btn.btn-primary(type="sumbit") Add
+    .row(style="margin: 0px")
+        .col-lg-12(style="padding: 0px")
+            .widget-container.scrollable.chat.chat-page
+                .contact-list
+                    .heading.media
+                        .media-left
+                            span.glyphicon.glyphicon-user(style="font-size: 24px")
+                        .media-body Contacts <br>
+                            small 100 friends
+                        .media-right
+                            button#addFriend(type="button" hidden data-toggle="modal" data-target="#addModal")
+                            i.icon-plus#addBtn
+
+                    ul
+                        - for (var i=0; i<10; i++)
+                            li
+                                - var group = '<a href="#group'+i+'" class="media" data-toggle="collapse">';
+                                - var item = '<div class="collapse" id="group'+i+'">';
+
+                                !{group}
+                                .media-left.media-middle
+                                    span.caret
+                                .media-body group
+                                </a>
+
+                                !{item}
+                                //a(href="#collapseExample" data-toggle="collapse") aaa
+                                //.collapse#collapseExample
+                                ul.list-group
+                                    - for (var j=0; j<5; j++)
+                                        li.list-group-item
+                                            a.media(href="#")
+                                                .media-left
+                                                    img(width="35" height="35" src="images/avatar-female.png")
+                                                .media-body Walter White <br>
+                                                    small You say
+                                </div>
+                .widget-content.padded(style="height: 750px")
+                    div(style="margin: 80px 0 40px")
+                        center
+                            img.img-circle(width="160" height="160" src="images/TS.jpg")
+                    h2.text-center Sylvanus
+                    h5.text-center sylvanuszhy@gmail.com
+                    p(style="padding: 10px 250px") あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。
+                    center
+                        form.form-inline(method="post" action="#" style="padding: 0 0 20px")
+                            .form-group
+                                label.control-label(for="group") Group&nbsp;
+                                select.form-control.input-sm#group
+                                    option(value="Category 1") Option 1
+                                    option(value="Category 2") Option 2
+                                    option(value="Category 3") Option 3
+                                span &nbsp;&nbsp;
+                            input.btn.btn-default.input-sm(type="submit" value="change" style="margin: 0")
+                    div(style="padding: 10px 300px")
+                        table
+                            tr
+                                td.text-right Location
+                                td &nbsp &nbsp
+                                td Hangzhou
+                            tr
+                                td.text-right School
+                                td &nbsp &nbsp
+                                td ZJU
+                            tr
+                                td.text-right College
+                                td &nbsp &nbsp
+                                td CS
+                    br
+                    center
+                        button.btn.btn-info Send Message
+                        button.btn.btn-danger Delete Contact

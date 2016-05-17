@@ -1,0 +1,56 @@
+//
+   Created by Sylvanus on 3/23/16.
+
+extends sidebarLayout
+
+block detail
+    .row(style="margin: 0px")
+        .col-lg-12(style="padding: 0px")
+            .widget-container.scrollable.chat.chat-page
+                .contact-list
+                    .heading.media
+                        .media-left(style="font-size: 24px")
+                            i.icon-comments
+                        .media-body Chats <br>
+                            small 20 conversations
+                    ul
+                        - for (var i=0; i<20; i++)
+                            li
+                                a.media(href="#")
+                                    .media-left
+                                        img(width="35" height="35" src="images/avatar-female.png")
+                                    .media-body Walter White <br>
+                                        small You say
+                                    .media-right.media-middle(style="padding-right: 16px")
+                                        - if (i%2==0)
+                                            span.badge 4
+                                        - else
+                                            small 15:30
+                .heading.media
+                    .media-left
+                        img.img-circle(width="45" height="45" src="images/AITT.png")
+                    .media-body Yuki <br>
+                        small あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。
+                .widget-content.padded(style="height: 620px")
+                    ul
+                        - var messages = ['short message', 'Quisque volutpat mattis eros.', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.'];
+                        - for (var i=0; i<20; i++)
+                            - var message = messages[i%5];
+                            - var len = message.length*8;
+                            - if (len>600) len = 600;
+                            li
+                                img(width="40" height="40" src="images/avatar-male.jpg")
+                                - var bubble = '<div class="bubble" style="width: '+len+'px">'
+
+                                !{bubble}
+                                p.message #{message}
+                                p.time Today 3:53 pm
+                                </div>
+                            li.current-user
+                                img(width="40" height="40" src="images/avatar-female.jpg")
+                                .bubble
+                                    p.message #{message}
+                                    p.time Today 3:53 pm
+                .post-message
+                    input.form-control(placeholder="Write your message here..." type="text")
+                    input(type="submit" value="Send")
