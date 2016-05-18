@@ -4,7 +4,11 @@ var router = express.Router();
 var socketHandler = require('./socketHandler');
 
 var session = require('express-session');
-var sessionConf = session({ secret: 'test', cookie: { maxAge: 1000*60*10}});
+var sessionConf = session({
+  secret: 'test',
+  store: require('../models/models').sessionStore,
+  cookie: { maxAge: 1000*60*10}
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

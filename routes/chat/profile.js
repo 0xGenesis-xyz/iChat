@@ -16,14 +16,19 @@ var storage = multer.diskStorage({
     }
 });
 function fileFilter(req, file, cb) {
-    if (path.extension(file.originalname) !== '.png') {
-        return cb(new Error('Only png are allowed'))
+    var words = file.originalname.split('.');
+    var extension = words.pop();
+    if (extension != 'png' && extension != 'jpg' && extension != 'gif') {
+        return cb(new Error('Only png jpg gif are allowed'))
     }
     cb(null, true);
 }
-var upload = multer({ storage: storage }).single('avatar');
+var upload = multer({ storage: storage, fileFilter: fileFilter }).single('avatar');
 
 router.get('/', function(req, res, next) {
+    if (req.session.uid == null) {
+        res.redirect('/login');
+    }
     res.render('chat/profile', { title: 'Profile' });
 });
 

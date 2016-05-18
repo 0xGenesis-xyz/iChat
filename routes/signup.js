@@ -16,6 +16,7 @@ router.post('/process', function(req, res, next) {
     if (pwd1 != pwd2) {
         res.redirect(303, '/signup');
     } else {
+        var group = [];
         var User = Models.User;
         User.create({
             email: req.body.email,
