@@ -76,6 +76,15 @@
           $("img.img-circle#avatarBtn").bind("click", function() {
               document.getElementById('showProfile').click()
           })
+          $.getJSON("api/getUserInfo", function(data, textStatus) {
+              $("h2#nickname").text(data.username);
+              $("p#whatsup").text(data.whatsup);
+              $("img.img-circle#avatar").attr("src", "avatars/"+data.avatar);
+              $("td#email").text(data.email);
+              $("td#gender").text(data.gender);
+              $("td#birthday").text(data.birthday);
+              $("td#location").text(data.location);
+          })
       })
     </script>
     <div id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" class="modal fade">
@@ -84,10 +93,10 @@
           <div class="modal-header">
             <div style="padding: 30px" class="media">
               <div class="media-body">
-                <h2>Sylvanus</h2>
-                <p style="padding: 0 20px 0 0">あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。</p>
+                <h2 id="nickname"></h2>
+                <p id="whatsup" style="padding: 0 20px 0 0"></p>
               </div>
-              <div class="media-right"><img width="120" height="120" src="images/TS.jpg" class="img-circle"></div>
+              <div class="media-right"><img id="avatar" width="120" height="120" class="img-circle"></div>
             </div>
           </div>
           <div class="modal-body">
@@ -96,22 +105,22 @@
                 <tr>
                   <td class="text-right">Email</td>
                   <td>&nbsp &nbsp</td>
-                  <td>sylvanuszhy@gmail.com</td>
+                  <td id="email"></td>
                 </tr>
                 <tr>
                   <td class="text-right">Gender</td>
                   <td>&nbsp &nbsp</td>
-                  <td>Male</td>
+                  <td id="gender"></td>
                 </tr>
                 <tr>
                   <td class="text-right">Birthday</td>
                   <td>&nbsp &nbsp</td>
-                  <td>July 1</td>
+                  <td id="birthday"></td>
                 </tr>
                 <tr>
                   <td class="text-right">Location</td>
                   <td>&nbsp &nbsp</td>
-                  <td>Hangzhou</td>
+                  <td id="location"></td>
                 </tr>
               </table>
             </div>
@@ -152,7 +161,7 @@
                     <div class="form-group">
                       <label class="control-label col-md-3">Email</label>
                       <div class="col-md-5">
-                        <p class="form-control-static">sylvanuszhy@gmail.com</p>
+                        <p id="emailForm" class="form-control-static"></p>
                       </div>
                     </div>
                     <div class="form-group">
@@ -175,7 +184,7 @@
                     <div class="form-group">
                       <label class="control-label col-md-3">Birthday</label>
                       <div class="col-md-5">
-                        <div data-date-autoclose="true" data-date-format="mm/dd/yyyy" data-date-start-view="2" class="input-group date datepicker"><input class="form-control" name="birthday"  type="text"><span class="input-group-addon"><i class="icon-calendar"></i></span></input></div>
+                        <div data-date-autoclose="true" data-date-format="mm/dd/yyyy" data-date-start-view="2" class="input-group date datepicker"><input class="form-control" name="birthday" type="text"><span class="input-group-addon"><i class="icon-calendar"></i></span></input></div>
                       </div>
                     </div>
                     <div class="form-group">

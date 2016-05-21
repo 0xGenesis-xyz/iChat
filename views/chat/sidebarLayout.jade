@@ -9,6 +9,15 @@ block content
             $("img.img-circle#avatarBtn").bind("click", function() {
                 document.getElementById('showProfile').click()
             })
+            $.getJSON("api/getUserInfo", function(data, textStatus) {
+                $("h2#nickname").text(data.username);
+                $("p#whatsup").text(data.whatsup);
+                $("img.img-circle#avatar").attr("src", "avatars/"+data.avatar);
+                $("td#email").text(data.email);
+                $("td#gender").text(data.gender);
+                $("td#birthday").text(data.birthday);
+                $("td#location").text(data.location);
+            })
         })
     .modal.fade#profileModal(tabindex="-1" role="dialog" aria-labelledby="profileModalLabel")
         .modal-dialog(role="document")
@@ -16,29 +25,29 @@ block content
                 .modal-header
                     .media(style="padding: 30px")
                         .media-body
-                            h2 Sylvanus
-                            p(style="padding: 0 20px 0 0") あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。
+                            h2#nickname
+                            p#whatsup(style="padding: 0 20px 0 0")
                         .media-right
-                            img.img-circle(width="120" height="120" src="images/TS.jpg")
+                            img.img-circle#avatar(width="120" height="120")
                 .modal-body
                     div(style="padding: 10px 100px")
                         table
                             tr
                                 td.text-right Email
                                 td &nbsp &nbsp
-                                td sylvanuszhy@gmail.com
+                                td#email
                             tr
                                 td.text-right Gender
                                 td &nbsp &nbsp
-                                td Male
+                                td#gender
                             tr
                                 td.text-right Birthday
                                 td &nbsp &nbsp
-                                td July 1
+                                td#birthday
                             tr
                                 td.text-right Location
                                 td &nbsp &nbsp
-                                td Hangzhou
+                                td#location
                 .modal-footer
                     button.btn.btn-default(type="button" data-dismiss="modal") Close
     #wrapper

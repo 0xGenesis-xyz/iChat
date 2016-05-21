@@ -9,7 +9,7 @@ var Models = require('../../models/models');
 var multer = require('multer');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/avatars')
+        cb(null, 'public/avatars')
     },
     filename: function (req, file, cb) {
         cb(null, req.session.uid)

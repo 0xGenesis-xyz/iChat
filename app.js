@@ -19,6 +19,7 @@ var login = require('./routes/login');
 var profile = require('./routes/chat/profile');
 var conversation = require('./routes/chat/conversation');
 var friend = require('./routes/chat/friend');
+var api = require('./routes/api');
 var users = require('./routes/users');
 
 // view engine setup
@@ -40,6 +41,7 @@ app.use('/login', login);
 app.use('/profile', profile);
 app.use('/conversation', conversation);
 app.use('/friend', friend);
+app.use('/api', api);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
