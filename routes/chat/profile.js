@@ -29,7 +29,23 @@ router.get('/', function(req, res, next) {
     if (req.session.uid == null) {
         res.redirect('/login');
     }
-    res.render('chat/profile', { title: 'Profile' });
+    var User = Models.User;
+    User.find({ 'email': req.session.uid }, function (err, docs) {
+        if (docs.length == 1) {
+            res.render('chat/profile', {
+                title: 'Profile',
+                email: docs[0].email,
+                username: docs[0].username,
+                gender: docs[0].gender,
+                birthday: docs[0].birthday,
+                location: docs[0].location,
+                whatsup: docs[0].whatsup
+            });
+        } else {
+            console.log('wrong email');
+            res.redirect(303, '/login');
+        }
+    });
 });
 
 router.post('/editProfile', function(req, res, next) {

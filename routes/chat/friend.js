@@ -4,9 +4,30 @@
 
 var express = require('express');
 var router = express.Router();
+var Models = require('../../models/models');
 
 router.get('/', function(req, res, next) {
-    res.render('chat/friend', { title: 'Contacts' });
+    if (req.session.uid == null) {
+        res.redirect('/login');
+    }
+    var User = Models.User;
+    User.find({ email: req.session.uid }, 'friends', function (err, docs) {
+        if (docs.length == 1) {
+            var groups = [];
+            var friends = docs[0].friends;
+            friends.forEach(function(element) {
+                groups.push(element.group);
+            });
+            res.render('chat/friend', {
+                title: 'Contacts',
+                friends: friends,
+                groups: groups
+            });
+        } else {
+            console.log('wrong email');
+            res.redirect(303, '/login');
+        }
+    });
 });
 
 router.post('/addFriend', function(req, res, next) {

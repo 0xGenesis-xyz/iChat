@@ -22,10 +22,9 @@ block detail
                             input.form-control(type="text")
                         .form-group
                             label.control-label Choose a group
-                            select.form-control.input-sm#forgroup
-                                option(value="Category 1") Option 1
-                                option(value="Category 2") Option 2
-                                option(value="Category 3") Option 3
+                            select.form-control.input-sm
+                                each group in groups
+                                    option(value=group) #{group}
                     .modal-footer(style="padding: 0 30px 20px")
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
                         button.btn.btn-primary(type="sumbit") Add
@@ -43,29 +42,22 @@ block detail
                             i.icon-plus#addBtn
 
                     ul
-                        - for (var i=0; i<10; i++)
+                        each itemGroup in friends
                             li
-                                - var group = '<a href="#group'+i+'" class="media" data-toggle="collapse">';
-                                - var item = '<div class="collapse" id="group'+i+'">';
-
-                                !{group}
-                                .media-left.media-middle
-                                    span.caret
-                                .media-body group
-                                </a>
-
-                                !{item}
-                                //a(href="#collapseExample" data-toggle="collapse") aaa
-                                //.collapse#collapseExample
-                                ul.list-group
-                                    - for (var j=0; j<5; j++)
-                                        li.list-group-item
-                                            a.media(href="#")
-                                                .media-left
-                                                    img(width="35" height="35" src="images/avatar-female.png")
-                                                .media-body Walter White <br>
-                                                    small You say
-                                </div>
+                                - var item = itemGroup.group;
+                                a.media(href="#"+item data-toggle="collapse")
+                                    .media-left.media-middle
+                                        span.caret
+                                    .media-body #{item}
+                                .collapse(id=item)
+                                    ul.list-group
+                                        each itemFriend in itemGroup.items
+                                            li.list-group-item
+                                                a.media(href="#")
+                                                    .media-left
+                                                        img(width="35" height="35" src="images/avatar-female.png")
+                                                    .media-body #{itemFriend} <br>
+                                                        small You say
                 .widget-content.padded(style="height: 750px")
                     div(style="margin: 80px 0 40px")
                         center
@@ -76,11 +68,10 @@ block detail
                     center
                         form.form-inline(method="post" action="#" style="padding: 0 0 20px")
                             .form-group
-                                label.control-label(for="group") Group&nbsp;
-                                select.form-control.input-sm#group
-                                    option(value="Category 1") Option 1
-                                    option(value="Category 2") Option 2
-                                    option(value="Category 3") Option 3
+                                label.control-label Group&nbsp;
+                                select.form-control.input-sm
+                                    each group in groups
+                                        option(value=group) #{group}
                                 span &nbsp;&nbsp;
                             input.btn.btn-default.input-sm(type="submit" value="change" style="margin: 0")
                     div(style="padding: 10px 300px")
