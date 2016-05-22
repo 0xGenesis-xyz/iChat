@@ -7,15 +7,33 @@ block detail
     script.
         $(document).ready(function() {
             $("i.icon-plus#addBtn").bind("click", function() {
-                document.getElementById('addFriend').click()
+                document.getElementById('add').click()
+            })
+            $("#addFriendNav").click(function() {
+                $("#addFriendNav").addClass("active");
+                $("#addGroupNav").removeClass("active");
+                $("#addFriend").show();
+                $("#addGroup").hide();
+            })
+            $("#addGroupNav").click(function () {
+                $("#addFriendNav").removeClass("active");
+                $("#addGroupNav").addClass("active");
+                $("#addFriend").hide();
+                $("#addGroup").show();
             })
         })
     .modal.fade#addModal(tabindex="-1" role="dialog" aria-labelledby="addModalLabel")
         .modal-dialog.modal-sm(role="document")
             .modal-content
                 .modal-header
-                    h4.modal-title Add a Friend
-                form(method="POST" action="/friend/addFriend")
+                    h4.modal-title Add a Friend/New Group
+                .modal-body
+                    ul.nav.nav-tabs
+                        li.active#addFriendNav(role="presentation")
+                            a(href="#") Friend
+                        li#addGroupNav(role="presentation")
+                            a(href="#") Group
+                form#addFriend(method="POST" action="/friend/addFriend")
                     .modal-body(style="padding: 10px 30px")
                         .form-group
                             label.control-label Add a friend by name or email
@@ -25,6 +43,14 @@ block detail
                             select.form-control.input-sm
                                 each group in groups
                                     option(value=group) #{group}
+                    .modal-footer(style="padding: 0 30px 20px")
+                        button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+                        button.btn.btn-primary(type="sumbit") Add
+                form#addGroup(method="POST" action="/friend/addGroup" hidden)
+                    .modal-body(style="padding: 10px 30px")
+                        .form-group
+                            label.control-label New Group
+                            input.form-control(type="text")
                     .modal-footer(style="padding: 0 30px 20px")
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
                         button.btn.btn-primary(type="sumbit") Add
@@ -38,7 +64,7 @@ block detail
                         .media-body Contacts <br>
                             small 100 friends
                         .media-right
-                            button#addFriend(type="button" hidden data-toggle="modal" data-target="#addModal")
+                            button#add(type="button" hidden data-toggle="modal" data-target="#addModal")
                             i.icon-plus#addBtn
 
                     ul
