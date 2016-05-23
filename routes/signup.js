@@ -21,7 +21,8 @@ router.post('/process', function(req, res, next) {
         User.create({
             email: req.body.email,
             username: req.body.username,
-            password: pwd1
+            password: pwd1,
+            avatar: 'unknown'
         }, function(error) {
             console.log('saved');
             if (error) {

@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/getUserInfo', function(req, res, next) {
     var User = Models.User;
-    User.find({ 'email': req.session.uid }, function (err, docs) {
+    User.find({ 'email': req.query.uid }, function (err, docs) {
         if (docs.length == 1) {
             res.json({
                 email: docs[0].email,

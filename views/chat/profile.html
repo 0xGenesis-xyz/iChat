@@ -76,14 +76,17 @@
           $("img.img-circle#avatarBtn").bind("click", function() {
               document.getElementById('showProfile').click()
           })
-          $.getJSON("api/getUserInfo", function(data, textStatus) {
-              $("h2#nickname").text(data.username);
-              $("p#whatsup").text(data.whatsup);
-              $("img.img-circle#avatar").attr("src", "avatars/"+data.avatar);
-              $("td#email").text(data.email);
-              $("td#gender").text(data.gender);
-              $("td#birthday").text(data.birthday);
-              $("td#location").text(data.location);
+          $("button#showProfile").click(function() {
+              var uid = $("#sidebarEmail").text();
+              $.getJSON("api/getUserInfo", { uid: uid }, function (data, textStatus) {
+                  $("h2#nickname").text(data.username);
+                  $("p#whatsup").text(data.whatsup);
+                  $("img.img-circle#avatar").attr("src", "avatars/" + data.avatar);
+                  $("td#email").text(data.email);
+                  $("td#gender").text(data.gender);
+                  $("td#birthday").text(data.birthday);
+                  $("td#location").text(data.location);
+              })
           })
       })
     </script>
@@ -138,8 +141,8 @@
             <div style="padding: 10px" class="pull-right"><a href="/profile"><i class="icon-gear"></i></a></div>
             <button id="showProfile" type="button" hidden data-toggle="modal" data-target="#profileModal"></button>
             <div width="200" height="140" style="padding: 60px 60px 30px"><img id="avatarBtn" width="80" height="80" src="images/TS.jpg" class="img-circle"></div>
-            <p class="text-center">Sylvanus</p>
-            <p style="font-size: 12px" class="text-center">sylvanuszhy@gmail.com</p>
+            <p id="sidebarUsername" class="text-center">Sylvanus</p>
+            <p id="sidebarEmail" style="font-size: 12px" class="text-center">sylvanuszhy@gmail.com</p>
           </li>
           <li><a href="/friend">Friends</a></li>
           <li><a href="/conversation">Conversations</a></li>

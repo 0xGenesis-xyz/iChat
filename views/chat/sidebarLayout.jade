@@ -9,14 +9,17 @@ block content
             $("img.img-circle#avatarBtn").bind("click", function() {
                 document.getElementById('showProfile').click()
             })
-            $.getJSON("api/getUserInfo", function(data, textStatus) {
-                $("h2#nickname").text(data.username);
-                $("p#whatsup").text(data.whatsup);
-                $("img.img-circle#avatar").attr("src", "avatars/"+data.avatar);
-                $("td#email").text(data.email);
-                $("td#gender").text(data.gender);
-                $("td#birthday").text(data.birthday);
-                $("td#location").text(data.location);
+            $("button#showProfile").click(function() {
+                var uid = $("#sidebarEmail").text();
+                $.getJSON("api/getUserInfo", { uid: uid }, function (data, textStatus) {
+                    $("h2#nickname").text(data.username);
+                    $("p#whatsup").text(data.whatsup);
+                    $("img.img-circle#avatar").attr("src", "avatars/" + data.avatar);
+                    $("td#email").text(data.email);
+                    $("td#gender").text(data.gender);
+                    $("td#birthday").text(data.birthday);
+                    $("td#location").text(data.location);
+                })
             })
         })
     .modal.fade#profileModal(tabindex="-1" role="dialog" aria-labelledby="profileModalLabel")
@@ -60,8 +63,8 @@ block content
                     button#showProfile(type="button" hidden data-toggle="modal" data-target="#profileModal")
                     div(width="200" height="140" style="padding: 60px 60px 30px")
                         img.img-circle#avatarBtn(width="80" height="80" src="images/TS.jpg")
-                    p.text-center Sylvanus
-                    p.text-center(style="font-size: 12px") sylvanuszhy@gmail.com
+                    p.text-center#sidebarUsername Sylvanus
+                    p.text-center#sidebarEmail(style="font-size: 12px") sylvanuszhy@gmail.com
                 li
                     a(href="/friend") Friends
                 li

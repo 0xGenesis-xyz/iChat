@@ -36,18 +36,42 @@ router.post('/addFriend', function(req, res, next) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
+        res.json({ newFriend: req.body.newFriend, toGroup: req.body.toGroup });
     });
-    res.redirect(303, '/friend');
 });
 
 router.post('/addGroup', function(req, res, next) {
     var User = Models.User;
-    User.update({ email: req.session.uid }, { $push: { friends: {group: req.body.newGroup, items: []} }}, function (err, raw) {
+    User.update({ email: req.session.uid }, { $push: { friends: { group: req.body.newGroup, items: [] }}}, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
+        res.json({ newGroup: req.body.newGroup });
     });
-    res.redirect(303, '/friend');
+});
+
+router.post('/changeGroup', function(req, res, next) {
+    var User = Models.User;
+    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: {'friends.$.items': req.body.uid } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        User.update({ email: req.session.uid, 'friends.group': req.body.fromGroup }, { $pull: {'friends.$.items': req.body.uid } }, function (err, raw) {
+            if (err)
+                console.error(error);
+            console.log('The raw response from Mongo was ', raw);
+        });
+    });
+});
+
+router.post('/deleteFriend', function(req, res, next) {
+    var User = Models.User;
+    User.update({ email: req.session.uid, 'friends.group': req.body.gid }, { $pull: {'friends.$.items': req.body.uid } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        // one more delete
+    });
 });
 
 module.exports = router;

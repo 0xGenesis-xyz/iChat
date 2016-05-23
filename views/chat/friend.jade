@@ -6,6 +6,8 @@ extends sidebarLayout
 block detail
     script.
         $(document).ready(function() {
+            var currentUser;
+            var currentGroup;
             $("i.icon-plus#addBtn").bind("click", function() {
                 document.getElementById('add').click()
             })
@@ -21,6 +23,44 @@ block detail
                 $("#addFriend").hide();
                 $("#addGroup").show();
             })
+            $("button#submitNewFriend").click(function () {
+                $.post("/friend/addFriend", $("form#addFriend").serialize(), function(data) {
+                })
+            })
+            $("button#submitNewGroup").click(function() {
+                $.post("/friend/addGroup", $("form#addGroup").serialize(), function(data) {
+                    var item = data.newGroup;
+                    $("ul#group").append($("<li>").text(item));
+                })
+            })
+            $("button#submitChangeGroup").click(function() {
+                var toGroup = $("select#selectGroup").val();
+                $.post("/friend/changeGroup", { uid: currentUser, fromGroup: currentGroup, toGroup: toGroup }, function (data) {
+                })
+            })
+            $("button#submitDelFriend").click(function() {
+                $.post("/friend/deleteFriend", { uid: currentUser, gid: currentGroup }, function (data) {
+                })
+            })
+            $("li.list-group-item").click(function() {
+                var uid = $(this).attr("id").split("__")[1];
+                var gid = $(this).parents("li").attr("id").split("__")[1];
+                currentUser = uid;
+                currentGroup = gid;
+                $.getJSON("api/getUserInfo", {uid: uid}, function (data, textStatus) {
+                    $("img.img-circle#friendAvatar").attr("src", "avatars/" + data.avatar);
+                    $("h2#friendNickname").text(data.username);
+                    $("h5#friendEmail").text(data.email);
+                    $("p#friendWhatsup").text(data.whatsup);
+                    $("select#selectGroup").children().removeAttr("selected");
+                    $("select#selectGroup").children().filter(function() {
+                        return ($(this).val() == gid);
+                    }).attr("selected", "selected");
+                    $("td#friendGender").text(data.gender);
+                    $("td#friendBirthday").text(data.birthday);
+                    $("td#friendLocation").text(data.location);
+                })
+            })
         })
     .modal.fade#addModal(tabindex="-1" role="dialog" aria-labelledby="addModalLabel")
         .modal-dialog.modal-sm(role="document")
@@ -33,7 +73,7 @@ block detail
                             a(href="#") Friend
                         li#addGroupNav(role="presentation")
                             a(href="#") Group
-                form#addFriend(method="POST" action="/friend/addFriend")
+                form#addFriend
                     .modal-body(style="padding: 10px 30px")
                         .form-group
                             label.control-label Add a friend by name or email
@@ -45,15 +85,15 @@ block detail
                                     option(value=group) #{group}
                     .modal-footer(style="padding: 0 30px 20px")
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
-                        button.btn.btn-primary(type="sumbit") Add
-                form#addGroup(method="POST" action="/friend/addGroup" hidden)
+                        button.btn.btn-primary#submitNewFriend(type="button" data-dismiss="modal") Add
+                form#addGroup(hidden)
                     .modal-body(style="padding: 10px 30px")
                         .form-group
                             label.control-label New Group
                             input.form-control(name="newGroup" type="text")
                     .modal-footer(style="padding: 0 30px 20px")
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
-                        button.btn.btn-primary(type="sumbit") Add
+                        button.btn.btn-primary#submitNewGroup(type="button" data-dismiss="modal") Add
     .row(style="margin: 0px")
         .col-lg-12(style="padding: 0px")
             .widget-container.scrollable.chat.chat-page
@@ -66,19 +106,18 @@ block detail
                         .media-right
                             button#add(type="button" hidden data-toggle="modal" data-target="#addModal")
                             i.icon-plus#addBtn
-
-                    ul
+                    ul#group
                         each itemGroup in friends
-                            li
-                                - var item = itemGroup.group;
+                            - var item = itemGroup.group;
+                            li(id="_group__"+item)
                                 a.media(href="#"+item data-toggle="collapse")
                                     .media-left.media-middle
                                         span.caret
                                     .media-body #{item}
                                 .collapse(id=item)
-                                    ul.list-group
+                                    ul.list-group#friend
                                         each itemFriend in itemGroup.items
-                                            li.list-group-item
+                                            li.list-group-item(id="_friend__"+itemFriend)
                                                 a.media(href="#")
                                                     .media-left
                                                         img(width="35" height="35" src="images/avatar-female.png")
@@ -87,34 +126,34 @@ block detail
                 .widget-content.padded(style="height: 750px")
                     div(style="margin: 80px 0 40px")
                         center
-                            img.img-circle(width="160" height="160" src="images/TS.jpg")
-                    h2.text-center Sylvanus
-                    h5.text-center sylvanuszhy@gmail.com
-                    p(style="padding: 10px 250px") あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。
+                            img.img-circle#friendAvatar(width="160" height="160")
+                    h2.text-center#friendNickname
+                    h5.text-center#friendEmail
+                    p#friendWhatsup(style="padding: 10px 250px")
                     center
-                        form.form-inline(method="post" action="#" style="padding: 0 0 20px")
+                        form.form-inline#changeGroup(style="padding: 0 0 20px")
                             .form-group
                                 label.control-label Group&nbsp;
-                                select.form-control.input-sm
+                                select.form-control.input-sm#selectGroup
                                     each group in groups
                                         option(value=group) #{group}
                                 span &nbsp;&nbsp;
-                            input.btn.btn-default.input-sm(type="submit" value="change" style="margin: 0")
+                            button.btn.btn-default.input-sm#submitChangeGroup(style="margin: 0") change
                     div(style="padding: 10px 300px")
                         table
                             tr
+                                td.text-right Gender
+                                td &nbsp &nbsp
+                                td#friendGender
+                            tr
+                                td.text-right Birthday
+                                td &nbsp &nbsp
+                                td#friendBirthday
+                            tr
                                 td.text-right Location
                                 td &nbsp &nbsp
-                                td Hangzhou
-                            tr
-                                td.text-right School
-                                td &nbsp &nbsp
-                                td ZJU
-                            tr
-                                td.text-right College
-                                td &nbsp &nbsp
-                                td CS
+                                td#friendLocation
                     br
                     center
                         button.btn.btn-info Send Message
-                        button.btn.btn-danger Delete Contact
+                        button.btn.btn-danger#submitDelFriend Delete Contact
