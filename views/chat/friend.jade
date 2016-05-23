@@ -37,10 +37,10 @@ block detail
                     .modal-body(style="padding: 10px 30px")
                         .form-group
                             label.control-label Add a friend by name or email
-                            input.form-control(type="text")
+                            input.form-control(name="newFriend" type="text")
                         .form-group
                             label.control-label Choose a group
-                            select.form-control.input-sm
+                            select.form-control.input-sm(name="toGroup")
                                 each group in groups
                                     option(value=group) #{group}
                     .modal-footer(style="padding: 0 30px 20px")
@@ -50,7 +50,7 @@ block detail
                     .modal-body(style="padding: 10px 30px")
                         .form-group
                             label.control-label New Group
-                            input.form-control(type="text")
+                            input.form-control(name="newGroup" type="text")
                     .modal-footer(style="padding: 0 30px 20px")
                         button.btn.btn-default(type="button" data-dismiss="modal") Cancel
                         button.btn.btn-primary(type="sumbit") Add

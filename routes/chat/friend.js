@@ -31,8 +31,23 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/addFriend', function(req, res, next) {
-    res.write('add');
-    res.end();
+    var User = Models.User;
+    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: {'friends.$.items': req.body.newFriend } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+    res.redirect(303, '/friend');
+});
+
+router.post('/addGroup', function(req, res, next) {
+    var User = Models.User;
+    User.update({ email: req.session.uid }, { $push: { friends: {group: req.body.newGroup, items: []} }}, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+    res.redirect(303, '/friend');
 });
 
 module.exports = router;
