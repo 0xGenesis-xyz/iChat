@@ -60,6 +60,7 @@ router.post('/changeGroup', function(req, res, next) {
             if (err)
                 console.error(error);
             console.log('The raw response from Mongo was ', raw);
+            res.json({ uid: req.body.uid, gid: req.body.toGroup });
         });
     });
 });
@@ -71,7 +72,12 @@ router.post('/deleteFriend', function(req, res, next) {
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
         // one more delete
+        res.json({ uid: req.body.uid });
     });
+});
+
+router.post('/newChat', function(req, res, next) {
+    var uid = req.body.uid;
 });
 
 module.exports = router;

@@ -8,6 +8,7 @@ block detail
         $(document).ready(function() {
             var currentUser;
             var currentGroup;
+            $("#friendInfo").hide();
             $("i.icon-plus#addBtn").bind("click", function() {
                 document.getElementById('add').click()
             })
@@ -29,22 +30,52 @@ block detail
             })
             $("button#submitNewGroup").click(function() {
                 $.post("/friend/addGroup", $("form#addGroup").serialize(), function(data) {
-                    var item = data.newGroup;
-                    $("ul#group").append($("<li>").text(item));
+                    var html = '<li>';
+                    html += '<a class="media" href="#'+data.newGroup+'" data-toggle="collapse">';
+                    html += '<div class="media-left media-middle">';
+                    html += '<span class="caret"></span>';
+                    html += '</div>';
+                    html += '<div class="media-body">'+data.newGroup+'</div>';
+                    html += '</a>';
+                    html += '<div class="collapse" id="'+data.newGroup+'">';
+                    html += '<ul class="list-group" id="_group__'+data.newGroup+'">';
+                    html += '</ul></div></li>';
+                    $("ul#group").append(html);
+                    $("select.form-control.input-sm").append('<option value="'+data.newGroup+'">'+data.newGroup+'</option>');
                 })
             })
             $("button#submitChangeGroup").click(function() {
                 var toGroup = $("select#selectGroup").val();
                 $.post("/friend/changeGroup", { uid: currentUser, fromGroup: currentGroup, toGroup: toGroup }, function (data) {
+                    var uid = "_friend__"+data.uid;
+                    document.getElementById(uid).remove();
+                    var gid = "_group__"+data.gid;
+                    var html = '<li class="list-group-item" id="'+uid+'">';
+                    html += '<a class="media" href="#">';
+                    html += '<div class="media-left">';
+                    html += '<img width="40" height="40">';
+                    html += '</div>';
+                    html += '<div class="media-body">';
+                    html += '<div class="media-heading">'+data.uid+'</div>';
+                    html += '<small>You say</small>';
+                    html += '</div></a></li>';
+                    document.getElementById(gid).innerHTML += html;
+                    // event failure
                 })
+            })
+            $("button#submitChat").click(function() {
+                $.post("/friend/newChat", { uid: currentUser });
             })
             $("button#submitDelFriend").click(function() {
                 $.post("/friend/deleteFriend", { uid: currentUser, gid: currentGroup }, function (data) {
+                    var uid = "_friend__"+data.uid;
+                    document.getElementById(uid).remove();
+                    $("#friendInfo").hide();
                 })
             })
             $("li.list-group-item").click(function() {
                 var uid = $(this).attr("id").split("__")[1];
-                var gid = $(this).parents("li").attr("id").split("__")[1];
+                var gid = $(this).parent().attr("id").split("__")[1];
                 currentUser = uid;
                 currentGroup = gid;
                 $.getJSON("api/getUserInfo", {uid: uid}, function (data, textStatus) {
@@ -56,10 +87,16 @@ block detail
                     $("select#selectGroup").children().filter(function() {
                         return ($(this).val() == gid);
                     }).attr("selected", "selected");
+                    // select bug
                     $("td#friendGender").text(data.gender);
                     $("td#friendBirthday").text(data.birthday);
                     $("td#friendLocation").text(data.location);
+                    $("#friendInfo").show();
                 })
+            })
+            $("a.media.idFriend").load(function() {
+                var uid = $(this).parent().attr("id").split("__")[1];
+                alert(uid);
             })
         })
     .modal.fade#addModal(tabindex="-1" role="dialog" aria-labelledby="addModalLabel")
@@ -109,51 +146,53 @@ block detail
                     ul#group
                         each itemGroup in friends
                             - var item = itemGroup.group;
-                            li(id="_group__"+item)
+                            li
                                 a.media(href="#"+item data-toggle="collapse")
                                     .media-left.media-middle
                                         span.caret
                                     .media-body #{item}
                                 .collapse(id=item)
-                                    ul.list-group#friend
+                                    ul.list-group(id="_group__"+item)
                                         each itemFriend in itemGroup.items
                                             li.list-group-item(id="_friend__"+itemFriend)
-                                                a.media(href="#")
+                                                a.media.idFriend(href="#")
                                                     .media-left
-                                                        img(width="35" height="35" src="images/avatar-female.png")
-                                                    .media-body #{itemFriend} <br>
+                                                        img(width="40" height="40")
+                                                    .media-body
+                                                        .media-heading #{itemFriend}
                                                         small You say
                 .widget-content.padded(style="height: 750px")
-                    div(style="margin: 80px 0 40px")
+                    #friendInfo
+                        div(style="margin: 80px 0 40px")
+                            center
+                                img.img-circle#friendAvatar(width="160" height="160")
+                        h2.text-center#friendNickname
+                        h5.text-center#friendEmail
+                        p#friendWhatsup(style="padding: 10px 250px")
                         center
-                            img.img-circle#friendAvatar(width="160" height="160")
-                    h2.text-center#friendNickname
-                    h5.text-center#friendEmail
-                    p#friendWhatsup(style="padding: 10px 250px")
-                    center
-                        form.form-inline#changeGroup(style="padding: 0 0 20px")
-                            .form-group
-                                label.control-label Group&nbsp;
-                                select.form-control.input-sm#selectGroup
-                                    each group in groups
-                                        option(value=group) #{group}
-                                span &nbsp;&nbsp;
-                            button.btn.btn-default.input-sm#submitChangeGroup(style="margin: 0") change
-                    div(style="padding: 10px 300px")
-                        table
-                            tr
-                                td.text-right Gender
-                                td &nbsp &nbsp
-                                td#friendGender
-                            tr
-                                td.text-right Birthday
-                                td &nbsp &nbsp
-                                td#friendBirthday
-                            tr
-                                td.text-right Location
-                                td &nbsp &nbsp
-                                td#friendLocation
-                    br
-                    center
-                        button.btn.btn-info Send Message
-                        button.btn.btn-danger#submitDelFriend Delete Contact
+                            form.form-inline#changeGroup(style="padding: 0 0 20px")
+                                .form-group
+                                    label.control-label Group&nbsp;
+                                    select.form-control.input-sm#selectGroup
+                                        each group in groups
+                                            option(value=group) #{group}
+                                    span &nbsp;&nbsp;
+                                button.btn.btn-default.input-sm#submitChangeGroup(style="margin: 0") change
+                        div(style="padding: 10px 300px")
+                            table
+                                tr
+                                    td.text-right Gender
+                                    td &nbsp &nbsp
+                                    td#friendGender
+                                tr
+                                    td.text-right Birthday
+                                    td &nbsp &nbsp
+                                    td#friendBirthday
+                                tr
+                                    td.text-right Location
+                                    td &nbsp &nbsp
+                                    td#friendLocation
+                        br
+                        center
+                            button.btn.btn-info#submitChat Send Message
+                            button.btn.btn-danger#submitDelFriend Delete Contact
