@@ -5,12 +5,23 @@ extends sidebarLayout
 
 block detail
     script.
+        function fetchFriendListInfo() {
+            $("li.list-group-item").each(function(index, element) {
+                var uid = $(this).attr("id").split("__")[1];
+                $.getJSON("api/getUserInfo", {uid: uid}, function (data, textStatus) {
+                    $(element).find(".friendAvatar").attr("src", "avatars/" + data.avatar);
+                    $(element).find(".friendName").text(data.username);
+                    $(element).find(".friendWhatsup").text(data.whatsup);
+                })
+            })
+        }
         $(document).ready(function() {
             var currentUser;
             var currentGroup;
+            fetchFriendListInfo();
             $("#friendInfo").hide();
             $("i.icon-plus#addBtn").bind("click", function() {
-                document.getElementById('add').click()
+                $(document.getElementById("add")).click();
             })
             $("#addFriendNav").click(function() {
                 $("#addFriendNav").addClass("active");
@@ -48,18 +59,21 @@ block detail
                 var toGroup = $("select#selectGroup").val();
                 $.post("/friend/changeGroup", { uid: currentUser, fromGroup: currentGroup, toGroup: toGroup }, function (data) {
                     var uid = "_friend__"+data.uid;
-                    document.getElementById(uid).remove();
-                    var gid = "_group__"+data.gid;
-                    var html = '<li class="list-group-item" id="'+uid+'">';
+                    var avatar = $(document.getElementById(uid)).find(".friendAvatar").attr("src");
+                    var username = $(document.getElementById(uid)).find(".friendName").text();
+                    var whatsup = $(document.getElementById(uid)).find(".friendWhatsup").text();
+                    $(document.getElementById(uid)).remove();
+                    var html = '<li class="list-group-item" id="' + uid + '">';
                     html += '<a class="media" href="#">';
                     html += '<div class="media-left">';
-                    html += '<img width="40" height="40">';
+                    html += '<img class="friendAvatart" width="40" height="40" src="' + avatar + '">';
                     html += '</div>';
                     html += '<div class="media-body">';
-                    html += '<div class="media-heading">'+data.uid+'</div>';
-                    html += '<small>You say</small>';
+                    html += '<div class="media-heading friendName">' + username + '</div>';
+                    html += '<small class="friendWhatsup">' + whatsup + '</small>';
                     html += '</div></a></li>';
-                    document.getElementById(gid).innerHTML += html;
+                    var gid = "_group__" + data.gid;
+                    $(document.getElementById(gid)).append(html);
                     // event failure
                 })
             })
@@ -69,11 +83,11 @@ block detail
             $("button#submitDelFriend").click(function() {
                 $.post("/friend/deleteFriend", { uid: currentUser, gid: currentGroup }, function (data) {
                     var uid = "_friend__"+data.uid;
-                    document.getElementById(uid).remove();
+                    $(document.getElementById(uid)).remove();
                     $("#friendInfo").hide();
                 })
             })
-            $("li.list-group-item").click(function() {
+            $("li.list-group-item").on("click", function() {
                 var uid = $(this).attr("id").split("__")[1];
                 var gid = $(this).parent().attr("id").split("__")[1];
                 currentUser = uid;
@@ -93,10 +107,6 @@ block detail
                     $("td#friendLocation").text(data.location);
                     $("#friendInfo").show();
                 })
-            })
-            $("a.media.idFriend").load(function() {
-                var uid = $(this).parent().attr("id").split("__")[1];
-                alert(uid);
             })
         })
     .modal.fade#addModal(tabindex="-1" role="dialog" aria-labelledby="addModalLabel")
@@ -155,12 +165,12 @@ block detail
                                     ul.list-group(id="_group__"+item)
                                         each itemFriend in itemGroup.items
                                             li.list-group-item(id="_friend__"+itemFriend)
-                                                a.media.idFriend(href="#")
+                                                a.media(href="#")
                                                     .media-left
-                                                        img(width="40" height="40")
+                                                        img.friendAvatar(width="40" height="40")
                                                     .media-body
-                                                        .media-heading #{itemFriend}
-                                                        small You say
+                                                        .media-heading.friendName
+                                                        small.friendWhatsup
                 .widget-content.padded(style="height: 750px")
                     #friendInfo
                         div(style="margin: 80px 0 40px")
