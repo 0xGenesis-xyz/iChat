@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var connect = require('connect');
 var SessionStore = require("session-mongoose")(connect);
 var Users = require('./users');
+var Messages = require('./messages');
 mongoose.connect('mongodb://localhost:27017/test');
 
 var db = mongoose.connection;
@@ -20,6 +21,8 @@ var sessionStore = new SessionStore({
 });
 
 var User = mongoose.model('Users', Users.userSchema);
+var Message = mongoose.model('Messages', Messages.messageSchema);
 
 module.exports.sessionStore = sessionStore;
 module.exports.User = User;
+module.exports.Message = Message;

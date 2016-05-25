@@ -4,7 +4,12 @@
 
 var express = require('express');
 var router = express.Router();
+var schedule = require('node-schedule');
 var Models = require('../../models/models');
+
+schedule.scheduleJob({hour: 6, minute: 0, dayOfWeek: 0}, function() {
+    console.log('Time for tea!');
+});
 
 router.get('/', function(req, res, next) {
     if (req.session.uid == null) {

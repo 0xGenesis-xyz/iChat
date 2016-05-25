@@ -9,7 +9,6 @@ function addUser(uid) {
     if (index == -1) {
         userList.push({uid: uid, socket: null});
     }
-    console.log(userList);
 }
 
 function setSocket(uid, socket) {
@@ -17,7 +16,13 @@ function setSocket(uid, socket) {
     if (index != -1) {
         userList[index].socket = socket;
     }
-    console.log(userList);
+}
+
+function deleteSocket(uid) {
+    var index = findUser(uid);
+    if (index != -1) {
+        userList[index].socket = null;
+    }
 }
 
 function userOfID(uid) {
@@ -41,4 +46,5 @@ function findUser(uid) {
 
 module.exports.addUser = addUser;
 module.exports.setSocket = setSocket;
+module.exports.deleteSocket = deleteSocket;
 module.exports.userOfID = userOfID;

@@ -6,6 +6,10 @@ extends ../layout
 block content
     script.
         $(document).ready(function() {
+            var socket = io();
+        })
+    script.
+        $(document).ready(function() {
             $("img.img-circle#avatarBtn").bind("click", function() {
                 document.getElementById('showProfile').click()
             })

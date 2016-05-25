@@ -69,8 +69,14 @@
     <script src="javascripts/jquery.sparkline.min.js" type="text/javascript"></script>
     <script src="javascripts/main.js" type="text/javascript"></script>
     <script src="javascripts/respond.js" type="text/javascript"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   </head>
   <body>
+    <script>
+      $(document).ready(function() {
+          var socket = io();
+      })
+    </script>
     <script>
       $(document).ready(function() {
           $("img.img-circle#avatarBtn").bind("click", function() {
