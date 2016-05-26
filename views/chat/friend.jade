@@ -78,7 +78,9 @@ block detail
                 })
             })
             $('button#submitChat').click(function() {
-                $.post('/friend/newChat', { uid: currentUser });
+                $.post('/friend/newChat', { uid: currentUser }, function(data) {
+                    window.location = data;
+                });
             })
             $('button#submitDelFriend').click(function() {
                 $.post('/friend/deleteFriend', { uid: currentUser, gid: currentGroup }, function (data) {

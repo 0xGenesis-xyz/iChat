@@ -16,7 +16,8 @@ var userSchema = new Schema ({
     location: String,
     whatsup: String,
     friends: Array,
-    chats: Array
+    chats: Array,
+    talkWith: String
 });
 
 module.exports.userSchema = userSchema;

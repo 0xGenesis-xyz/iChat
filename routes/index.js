@@ -34,7 +34,7 @@ module.exports = function(io) {
         if (uid) {
             socketHandler.addUser(uid);
             socketHandler.setSocket(uid, socket);
-            Message.count({ to: uid, state: 'unread' }, function (err, count) {
+            Message.count({ to: uid, state: 'delivered' }, function (err, count) {
                 if (err)
                     console.error(error);
                 socket.emit('unread', count);
@@ -49,7 +49,7 @@ module.exports = function(io) {
                 to: info.to,
                 message: info.message,
                 time: time,
-                state: 'unread'
+                state: 'delivered'
             }, function(error) {
                 console.log('saved');
                 if (error) {
@@ -69,6 +69,7 @@ module.exports = function(io) {
             updateChatList(to, from);
             socket.emit('newMessage', {
                 uid: to,
+                who: from,
                 message: message,
                 time: time.getHours()+':'+time.getMinutes()
             });
@@ -76,6 +77,7 @@ module.exports = function(io) {
             if (toUser) {
                 toUser.socket.emit('newMessage', {
                     uid: from,
+                    who: from,
                     message: message,
                     time: time.getHours()+':'+time.getMinutes()
                 });

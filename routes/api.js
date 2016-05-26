@@ -52,12 +52,34 @@ router.get('/getChatInfo', function(req, res, next) {
     });
 });
 
+router.get('/getCurrentChat', function(req, res, next) {
+    var User = Models.User;
+    User.find({ 'email': req.query.uid }, 'talkWith', function (err, docs) {
+        if (docs.length == 1) {
+            res.json(docs[0].talkWith);
+        } else {
+            console.log('wrong email');
+            res.redirect(303, '/login');
+        }
+    });
+});
+
 router.get('/getChatMessage', function(req, res, next) {
     var user = req.session.uid;
     var friend = req.query.uid;
     var Message = Models.Message;
     Message.find({ $or: [{ from: user, to: friend }, { from: friend, to: user }] } , null, { sort: {time: 1} }, function (err, docs) {
-        res.json(docs);
+        var messages = [];
+        docs.forEach(function(element) {
+            messages.push({
+                from: element.from,
+                to: element.to,
+                message: element.message,
+                time: element.time.getHours()+':'+element.time.getMinutes(),
+                state: element.state
+            });
+        });
+        res.json(messages);
     });
 });
 

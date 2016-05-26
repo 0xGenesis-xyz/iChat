@@ -29,4 +29,19 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.post('/checkMessage', function(req, res, next) {
+    var User = Models.User;
+    var Message = Models.Message;
+    User.update({ email: req.session.uid }, { talkWith: req.body.uid }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+    Message.update({ from: req.body.uid, to: req.session.uid }, { state: 'read' }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+});
+
 module.exports = router;

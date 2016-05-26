@@ -77,7 +77,30 @@ router.post('/deleteFriend', function(req, res, next) {
 });
 
 router.post('/newChat', function(req, res, next) {
-    var uid = req.body.uid;
+    var uid = req.session.uid;
+    var friend = req.body.uid;
+    var User = Models.User;
+    User.find({ email: uid }, 'chats', function (err, docs) {
+        if (docs.length == 1) {
+            var chats = docs[0].chats;
+            for (var i=0; i<chats.length; i++) {
+                if (chats[i] == friend) {
+                    chats.splice(i, 1);
+                    break;
+                }
+            }
+            chats.unshift(friend);
+            User.findOneAndUpdate({ email: uid }, { chats: chats, talkWith: friend }, function(err, raw) {
+                if (err)
+                    console.error(error);
+                //console.log('The raw response from Mongo was ', raw);
+            });
+            res.json('http://localhost:3000/conversation');
+        } else {
+            console.log('wrong email');
+            res.redirect(303, '/login');
+        }
+    });
 });
 
 module.exports = router;
