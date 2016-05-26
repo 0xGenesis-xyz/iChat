@@ -72,26 +72,22 @@
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   </head>
   <body>
+    <script src="javascripts/chat.js"></script>
     <script>
       $(document).ready(function() {
-          var socket = io();
-      })
-    </script>
-    <script>
-      $(document).ready(function() {
-          $("img.img-circle#avatarBtn").bind("click", function() {
-              document.getElementById('showProfile').click()
+          $('img.img-circle#avatarBtn').bind('click', function() {
+              document.getElementById('showProfile').click();
           })
-          $("button#showProfile").click(function() {
-              var uid = $("#sidebarEmail").text();
-              $.getJSON("api/getUserInfo", { uid: uid }, function (data, textStatus) {
-                  $("h2#nickname").text(data.username);
-                  $("p#whatsup").text(data.whatsup);
-                  $("img.img-circle#avatar").attr("src", "avatars/" + data.avatar);
-                  $("td#email").text(data.email);
-                  $("td#gender").text(data.gender);
-                  $("td#birthday").text(data.birthday);
-                  $("td#location").text(data.location);
+          $('button#showProfile').click(function() {
+              var uid = $('#sidebarEmail').text();
+              $.getJSON('api/getUserInfo', { uid: uid }, function (data, textStatus) {
+                  $('h2#nickname').text(data.username);
+                  $('p#whatsup').text(data.whatsup);
+                  $('img.img-circle#avatar').attr('src', 'avatars/' + data.avatar);
+                  $('td#email').text(data.email);
+                  $('td#gender').text(data.gender);
+                  $('td#birthday').text(data.birthday);
+                  $('td#location').text(data.location);
               })
           })
       })
@@ -151,7 +147,7 @@
             <p id="sidebarEmail" style="font-size: 12px" class="text-center">sylvanuszhy@gmail.com</p>
           </li>
           <li><a href="/friend">Friends</a></li>
-          <li><a href="/conversation">Conversations</a></li>
+          <li><a href="/conversation">Conversations<span id="unread" class="badge"></span></a></li>
           <li><a href="#">Subscriptions</a></li>
         </ul>
       </div>

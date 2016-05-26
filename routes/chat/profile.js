@@ -69,9 +69,7 @@ router.post('/changePassword', function(req, res, next) {
         console.log('password not consist');
     } else {
         var User = Models.User;
-        User.findOneAndUpdate({ email: req.session.uid, password: req.body.oldpwd }, {
-            password: req.body.newpwd1
-        }, function(err, raw) {
+        User.findOneAndUpdate({ email: req.session.uid, password: req.body.oldpwd }, { password: req.body.newpwd1 }, function(err, raw) {
             if (err)
                 console.error(error);
             console.log('The raw response from Mongo was ', raw);
@@ -86,9 +84,7 @@ router.post('/uploadAvatar', function(req, res, next) {
             console.error(err);
         }
         var User = Models.User;
-        User.findOneAndUpdate({ email: req.session.uid }, {
-            avatar: req.file.filename
-        }, function(err, raw) {
+        User.findOneAndUpdate({ email: req.session.uid }, { avatar: req.file.filename }, function(err, raw) {
             if (err)
                 console.error(error);
             console.log('The raw response from Mongo was ', raw);

@@ -75,23 +75,26 @@
     <script>
       $(document).ready(function() {
           var socket = io();
+          socket.on('unread', function(count) {
+              $('span.badge#unread').text(count);
+          })
       })
     </script>
     <script>
       $(document).ready(function() {
-          $("img.img-circle#avatarBtn").bind("click", function() {
-              document.getElementById('showProfile').click()
+          $('img.img-circle#avatarBtn').bind('click', function() {
+              document.getElementById('showProfile').click();
           })
-          $("button#showProfile").click(function() {
-              var uid = $("#sidebarEmail").text();
-              $.getJSON("api/getUserInfo", { uid: uid }, function (data, textStatus) {
-                  $("h2#nickname").text(data.username);
-                  $("p#whatsup").text(data.whatsup);
-                  $("img.img-circle#avatar").attr("src", "avatars/" + data.avatar);
-                  $("td#email").text(data.email);
-                  $("td#gender").text(data.gender);
-                  $("td#birthday").text(data.birthday);
-                  $("td#location").text(data.location);
+          $('button#showProfile').click(function() {
+              var uid = $('#sidebarEmail').text();
+              $.getJSON('api/getUserInfo', { uid: uid }, function (data, textStatus) {
+                  $('h2#nickname').text(data.username);
+                  $('p#whatsup').text(data.whatsup);
+                  $('img.img-circle#avatar').attr('src', 'avatars/' + data.avatar);
+                  $('td#email').text(data.email);
+                  $('td#gender').text(data.gender);
+                  $('td#birthday').text(data.birthday);
+                  $('td#location').text(data.location);
               })
           })
       })
@@ -151,12 +154,22 @@
             <p id="sidebarEmail" style="font-size: 12px" class="text-center">sylvanuszhy@gmail.com</p>
           </li>
           <li><a href="/friend">Friends</a></li>
-          <li><a href="/conversation">Conversations</a></li>
+          <li><a href="/conversation">Conversations<span id="unread" class="badge"></span></a></li>
           <li><a href="#">Subscriptions</a></li>
         </ul>
       </div>
       <div id="page-content-wrapper">
         <!--.container-fluid-->
+        <script>
+          function fetchChatListInfo() {
+              $('li.chatList').each(function(index, element) {
+                  $.getJSON('api/getChatInfo')
+              })
+          }
+          $(document).ready(function() {
+              fetchChatListInfo();
+          })
+        </script>
         <div style="margin: 0px" class="row">
           <div style="padding: 0px" class="col-lg-12">
             <div class="widget-container scrollable chat chat-page">
@@ -166,102 +179,102 @@
                   <div class="media-body">Chats <br><small>20 conversations</small></div>
                 </div>
                 <ul>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><span class="badge">4</span>
                       </div></a></li>
-                  <li><a href="#" class="media">
+                  <li id="_chat__undefined" class="chatList"><a href="#" class="media">
                       <div class="media-left"><img width="35" height="35" src="images/avatar-female.png"></div>
                       <div class="media-body">Walter White <br><small>You say</small></div>
                       <div style="padding-right: 16px" class="media-right media-middle"><small>15:30</small>

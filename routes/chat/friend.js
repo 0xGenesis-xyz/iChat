@@ -32,7 +32,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/addFriend', function(req, res, next) {
     var User = Models.User;
-    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: {'friends.$.items': req.body.newFriend } }, function (err, raw) {
+    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: { 'friends.$.items': req.body.newFriend } }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
@@ -52,11 +52,11 @@ router.post('/addGroup', function(req, res, next) {
 
 router.post('/changeGroup', function(req, res, next) {
     var User = Models.User;
-    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: {'friends.$.items': req.body.uid } }, function (err, raw) {
+    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: { 'friends.$.items': req.body.uid } }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
-        User.update({ email: req.session.uid, 'friends.group': req.body.fromGroup }, { $pull: {'friends.$.items': req.body.uid } }, function (err, raw) {
+        User.update({ email: req.session.uid, 'friends.group': req.body.fromGroup }, { $pull: { 'friends.$.items': req.body.uid } }, function (err, raw) {
             if (err)
                 console.error(error);
             console.log('The raw response from Mongo was ', raw);
@@ -67,7 +67,7 @@ router.post('/changeGroup', function(req, res, next) {
 
 router.post('/deleteFriend', function(req, res, next) {
     var User = Models.User;
-    User.update({ email: req.session.uid, 'friends.group': req.body.gid }, { $pull: {'friends.$.items': req.body.uid } }, function (err, raw) {
+    User.update({ email: req.session.uid, 'friends.group': req.body.gid }, { $pull: { 'friends.$.items': req.body.uid } }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);

@@ -6,12 +6,12 @@ extends sidebarLayout
 block detail
     script.
         function fetchFriendListInfo() {
-            $("li.list-group-item").each(function(index, element) {
-                var uid = $(this).attr("id").split("__")[1];
-                $.getJSON("api/getUserInfo", {uid: uid}, function (data, textStatus) {
-                    $(element).find(".friendAvatar").attr("src", "avatars/" + data.avatar);
-                    $(element).find(".friendName").text(data.username);
-                    $(element).find(".friendWhatsup").text(data.whatsup);
+            $('li.list-group-item').each(function(index, element) {
+                var uid = $(this).attr('id').split('friend__')[1];
+                $.getJSON('api/getUserInfo', {uid: uid}, function (data, textStatus) {
+                    $(element).find('.friendAvatar').attr('src', 'avatars/' + data.avatar);
+                    $(element).find('.friendName').text(data.username);
+                    $(element).find('.friendWhatsup').text(data.whatsup);
                 })
             })
         }
@@ -19,28 +19,28 @@ block detail
             var currentUser;
             var currentGroup;
             fetchFriendListInfo();
-            $("#friendInfo").hide();
-            $("i.icon-plus#addBtn").bind("click", function() {
-                $(document.getElementById("add")).click();
+            $('#friendInfo').hide();
+            $('i.icon-plus#addBtn').bind('click', function() {
+                $(document.getElementById('add')).click();
             })
-            $("#addFriendNav").click(function() {
-                $("#addFriendNav").addClass("active");
-                $("#addGroupNav").removeClass("active");
-                $("#addFriend").show();
-                $("#addGroup").hide();
+            $('#addFriendNav').click(function() {
+                $('#addFriendNav').addClass('active');
+                $('#addGroupNav').removeClass('active');
+                $('#addFriend').show();
+                $('#addGroup').hide();
             })
-            $("#addGroupNav").click(function () {
-                $("#addFriendNav").removeClass("active");
-                $("#addGroupNav").addClass("active");
-                $("#addFriend").hide();
-                $("#addGroup").show();
+            $('#addGroupNav').click(function () {
+                $('#addFriendNav').removeClass('active');
+                $('#addGroupNav').addClass('active');
+                $('#addFriend').hide();
+                $('#addGroup').show();
             })
-            $("button#submitNewFriend").click(function () {
-                $.post("/friend/addFriend", $("form#addFriend").serialize(), function(data) {
+            $('button#submitNewFriend').click(function () {
+                $.post('/friend/addFriend', $('form#addFriend').serialize(), function(data) {
                 })
             })
-            $("button#submitNewGroup").click(function() {
-                $.post("/friend/addGroup", $("form#addGroup").serialize(), function(data) {
+            $('button#submitNewGroup').click(function() {
+                $.post('/friend/addGroup', $('form#addGroup').serialize(), function(data) {
                     var html = '<li>';
                     html += '<a class="media" href="#'+data.newGroup+'" data-toggle="collapse">';
                     html += '<div class="media-left media-middle">';
@@ -51,17 +51,17 @@ block detail
                     html += '<div class="collapse" id="'+data.newGroup+'">';
                     html += '<ul class="list-group" id="_group__'+data.newGroup+'">';
                     html += '</ul></div></li>';
-                    $("ul#group").append(html);
-                    $("select.form-control.input-sm").append('<option value="'+data.newGroup+'">'+data.newGroup+'</option>');
+                    $('ul#group').append(html);
+                    $('select.form-control.input-sm').append('<option value="'+data.newGroup+'">'+data.newGroup+'</option>');
                 })
             })
-            $("button#submitChangeGroup").click(function() {
-                var toGroup = $("select#selectGroup").val();
-                $.post("/friend/changeGroup", { uid: currentUser, fromGroup: currentGroup, toGroup: toGroup }, function (data) {
-                    var uid = "_friend__"+data.uid;
-                    var avatar = $(document.getElementById(uid)).find(".friendAvatar").attr("src");
-                    var username = $(document.getElementById(uid)).find(".friendName").text();
-                    var whatsup = $(document.getElementById(uid)).find(".friendWhatsup").text();
+            $('button#submitChangeGroup').click(function() {
+                var toGroup = $('select#selectGroup').val();
+                $.post('/friend/changeGroup', { uid: currentUser, fromGroup: currentGroup, toGroup: toGroup }, function (data) {
+                    var uid = '_friend__'+data.uid;
+                    var avatar = $(document.getElementById(uid)).find('.friendAvatar').attr('src');
+                    var username = $(document.getElementById(uid)).find('.friendName').text();
+                    var whatsup = $(document.getElementById(uid)).find('.friendWhatsup').text();
                     $(document.getElementById(uid)).remove();
                     var html = '<li class="list-group-item" id="' + uid + '">';
                     html += '<a class="media" href="#">';
@@ -72,40 +72,40 @@ block detail
                     html += '<div class="media-heading friendName">' + username + '</div>';
                     html += '<small class="friendWhatsup">' + whatsup + '</small>';
                     html += '</div></a></li>';
-                    var gid = "_group__" + data.gid;
+                    var gid = '_group__' + data.gid;
                     $(document.getElementById(gid)).append(html);
                     // event failure
                 })
             })
-            $("button#submitChat").click(function() {
-                $.post("/friend/newChat", { uid: currentUser });
+            $('button#submitChat').click(function() {
+                $.post('/friend/newChat', { uid: currentUser });
             })
-            $("button#submitDelFriend").click(function() {
-                $.post("/friend/deleteFriend", { uid: currentUser, gid: currentGroup }, function (data) {
-                    var uid = "_friend__"+data.uid;
+            $('button#submitDelFriend').click(function() {
+                $.post('/friend/deleteFriend', { uid: currentUser, gid: currentGroup }, function (data) {
+                    var uid = '_friend__'+data.uid;
                     $(document.getElementById(uid)).remove();
-                    $("#friendInfo").hide();
+                    $('#friendInfo').hide();
                 })
             })
-            $("li.list-group-item").on("click", function() {
-                var uid = $(this).attr("id").split("__")[1];
-                var gid = $(this).parent().attr("id").split("__")[1];
+            $('li.list-group-item').on('click', function() {
+                var uid = $(this).attr('id').split('friend__')[1];
+                var gid = $(this).parent().attr('id').split('group__')[1];
                 currentUser = uid;
                 currentGroup = gid;
-                $.getJSON("api/getUserInfo", {uid: uid}, function (data, textStatus) {
-                    $("img.img-circle#friendAvatar").attr("src", "avatars/" + data.avatar);
-                    $("h2#friendNickname").text(data.username);
-                    $("h5#friendEmail").text(data.email);
-                    $("p#friendWhatsup").text(data.whatsup);
-                    $("select#selectGroup").children().removeAttr("selected");
-                    $("select#selectGroup").children().filter(function() {
+                $.getJSON('api/getUserInfo', {uid: uid}, function (data, textStatus) {
+                    $('img.img-circle#friendAvatar').attr('src', 'avatars/' + data.avatar);
+                    $('h2#friendNickname').text(data.username);
+                    $('h5#friendEmail').text(data.email);
+                    $('p#friendWhatsup').text(data.whatsup);
+                    $('select#selectGroup').children().removeAttr('selected');
+                    $('select#selectGroup').children().filter(function() {
                         return ($(this).val() == gid);
-                    }).attr("selected", "selected");
+                    }).attr('selected', 'selected');
                     // select bug
-                    $("td#friendGender").text(data.gender);
-                    $("td#friendBirthday").text(data.birthday);
-                    $("td#friendLocation").text(data.location);
-                    $("#friendInfo").show();
+                    $('td#friendGender').text(data.gender);
+                    $('td#friendBirthday').text(data.birthday);
+                    $('td#friendLocation').text(data.location);
+                    $('#friendInfo').show();
                 })
             })
         })

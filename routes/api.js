@@ -30,4 +30,12 @@ router.get('/getUserInfo', function(req, res, next) {
     });
 });
 
+router.get('/getChatInfo', function(req, res, next) {
+    res.json();
+});
+
+router.get('/getChatMessage', function(req, res, next) {
+    res.json();
+});
+
 module.exports = router;

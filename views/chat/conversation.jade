@@ -13,14 +13,15 @@ block detail
                             i.icon-comments
                         .media-body Chats <br>
                             small 20 conversations
-                    ul
-                        - for (var i=0; i<20; i++)
-                            li
+                    ul#chatList
+                        each chat in chats
+                            li.chatListItem(id="_chat__"+chat)
                                 a.media(href="#")
                                     .media-left
-                                        img(width="35" height="35" src="images/avatar-female.png")
-                                    .media-body Walter White <br>
-                                        small You say
+                                        img.chatAvatar(width="40" height="40")
+                                    .media-body
+                                        .media-heading.chatName
+                                        small.chatMessage
                                     .media-right.media-middle(style="padding-right: 16px")
                                         - if (i%2==0)
                                             span.badge 4
@@ -52,5 +53,5 @@ block detail
                                     p.message #{message}
                                     p.time Today 3:53 pm
                 .post-message
-                    input.form-control(placeholder="Write your message here..." type="text")
-                    input(type="submit" value="Send")
+                    input.form-control#content(placeholder="Write your message here..." type="text")
+                    input#submitMessage(type="submit" value="Send")
