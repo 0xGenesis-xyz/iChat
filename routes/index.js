@@ -43,11 +43,12 @@ module.exports = function(io) {
 
         socket.on('send', function(info) {
             console.log('receive chat: '+uid);
+            var time = new Date();
             Message.create({
                 from: uid,
                 to: info.to,
                 message: info.message,
-                time: info.time,
+                time: time,
                 state: 'unread'
             }, function(error) {
                 console.log('saved');
@@ -55,7 +56,7 @@ module.exports = function(io) {
                     console.error(error);
                 }
             });
-            sendMessage(uid, info.to, info.message, info.time);
+            sendMessage(uid, info.to, info.message, time);
         });
 
         socket.on('disconnect', function(){
@@ -69,14 +70,14 @@ module.exports = function(io) {
             socket.emit('newMessage', {
                 uid: to,
                 message: message,
-                time: time
+                time: time.getHours()+':'+time.getMinutes()
             });
             var toUser = socketHandler.userOfID(to);
             if (toUser) {
                 toUser.socket.emit('newMessage', {
                     uid: from,
                     message: message,
-                    time: time
+                    time: time.getHours()+':'+time.getMinutes()
                 });
             } else {
                 console.log('no receiver');
@@ -98,7 +99,7 @@ module.exports = function(io) {
                     User.findOneAndUpdate({ email: uid }, { chats: chats }, function(err, raw) {
                         if (err)
                             console.error(error);
-                        console.log('The raw response from Mongo was ', raw);
+                        //console.log('The raw response from Mongo was ', raw);
                     });
                 } else {
                     console.log('wrong email');

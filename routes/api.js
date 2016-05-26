@@ -31,11 +31,34 @@ router.get('/getUserInfo', function(req, res, next) {
 });
 
 router.get('/getChatInfo', function(req, res, next) {
-    res.json();
+    var user = req.session.uid;
+    var friend = req.query.uid;
+    var Message = Models.Message;
+    Message.find({ $or: [{ from: user, to: friend }, { from: friend, to: user }] } , null, { sort: {time: -1} }, function (err, docs) {
+        if (docs.length>0) {
+            var unread = 0;
+            docs.forEach(function (element) {
+                if (element.to == user && element.state == 'unread') {
+                    unread++;
+                }
+            });
+            var time = docs[0].time;
+            res.json({
+                message: docs[0].message,
+                time: time.getHours()+':'+time.getMinutes(),
+                unread: unread
+            });
+        }
+    });
 });
 
 router.get('/getChatMessage', function(req, res, next) {
-    res.json();
+    var user = req.session.uid;
+    var friend = req.query.uid;
+    var Message = Models.Message;
+    Message.find({ $or: [{ from: user, to: friend }, { from: friend, to: user }] } , null, { sort: {time: 1} }, function (err, docs) {
+        res.json(docs);
+    });
 });
 
 module.exports = router;

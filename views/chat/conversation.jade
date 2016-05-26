@@ -23,16 +23,14 @@ block detail
                                         .media-heading.chatName
                                         small.chatMessage
                                     .media-right.media-middle(style="padding-right: 16px")
-                                        - if (i%2==0)
-                                            span.badge 4
-                                        - else
-                                            small 15:30
-                .heading.media
+                                        small.chatTime
+                                        span.badge.unread
+                .heading.media#chatHeading
                     .media-left
                         img.img-circle(width="45" height="45" src="images/AITT.png")
                     .media-body Yuki <br>
                         small あたしの上には太阳なんかなかった。いつも夜。でも暗くはなかった。太阳に代わるものがあったから。
-                .widget-content.padded(style="height: 620px")
+                .widget-content.padded#chatContent(style="height: 620px")
                     ul
                         - var messages = ['short message', 'Quisque volutpat mattis eros.', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.'];
                         - for (var i=0; i<20; i++)
@@ -52,6 +50,6 @@ block detail
                                 .bubble
                                     p.message #{message}
                                     p.time Today 3:53 pm
-                .post-message
+                .post-message#chatSend
                     input.form-control#content(placeholder="Write your message here..." type="text")
                     input#submitMessage(type="submit" value="Send")
