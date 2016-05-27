@@ -44,4 +44,13 @@ router.post('/checkMessage', function(req, res, next) {
     });
 });
 
+router.post('/removeChat', function(req, res, next) {
+    var User = Models.User;
+    User.update({ email: req.session.uid }, { $pull: { chats: req.body.uid } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+});
+
 module.exports = router;

@@ -17,6 +17,8 @@ block detail
                         each chat in chats
                             li.chatListItem(id="_chat__"+chat)
                                 a.media(href="#")
+                                    .media-left.media-middle
+                                        i.icon-remove.removeChat(style="margin: 0")
                                     .media-left
                                         img.chatAvatar(width="40" height="40")
                                     .media-body
