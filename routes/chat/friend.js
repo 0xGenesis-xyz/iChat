@@ -30,50 +30,57 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.post('/addFriend', function(req, res, next) {
-    var User = Models.User;
-    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: { 'friends.$.items': req.body.newFriend } }, function (err, raw) {
-        if (err)
-            console.error(error);
-        console.log('The raw response from Mongo was ', raw);
-        res.json({ newFriend: req.body.newFriend, toGroup: req.body.toGroup });
-    });
-});
-
 router.post('/addGroup', function(req, res, next) {
+    var uid = req.session.uid;
+    var newGroup = req.body.newGroup;
     var User = Models.User;
-    User.update({ email: req.session.uid }, { $push: { friends: { group: req.body.newGroup, items: [] }}}, function (err, raw) {
+    User.update({ email: uid }, { $push: { friends: { group: newGroup, items: [] }}}, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
-        res.json({ newGroup: req.body.newGroup });
+        console.log(uid+' add a new group '+newGroup);
     });
+    res.json({ newGroup: newGroup });
 });
 
 router.post('/changeGroup', function(req, res, next) {
+    var uid = req.session.uid;
+    var friend = req.body.uid;
+    var fromGroup = req.body.fromGroup;
+    var toGroup = req.body.toGroup;
     var User = Models.User;
-    User.update({ email: req.session.uid, 'friends.group': req.body.toGroup }, { $push: { 'friends.$.items': req.body.uid } }, function (err, raw) {
+    User.update({ email: uid, 'friends.group': toGroup }, { $push: { 'friends.$.items': friend } }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
-        User.update({ email: req.session.uid, 'friends.group': req.body.fromGroup }, { $pull: { 'friends.$.items': req.body.uid } }, function (err, raw) {
-            if (err)
-                console.error(error);
-            console.log('The raw response from Mongo was ', raw);
-            res.json({ uid: req.body.uid, gid: req.body.toGroup });
-        });
+        console.log(uid+' add '+friend+' to group '+toGroup);
     });
+    User.update({ email: uid, 'friends.group': fromGroup }, { $pull: { 'friends.$.items': friend } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(uid+' remove '+friend+' from group '+fromGroup);
+    });
+    res.json({ uid: friend, gid: toGroup });
 });
 
 router.post('/deleteFriend', function(req, res, next) {
+    var uid = req.session.uid;
+    var friend = req.body.uid;
     var User = Models.User;
-    User.update({ email: req.session.uid, 'friends.group': req.body.gid }, { $pull: { 'friends.$.items': req.body.uid } }, function (err, raw) {
+    User.update({ email: uid, 'friends.group': req.body.gid }, { $pull: { 'friends.$.items': friend } }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
-        // one more delete
-        res.json({ uid: req.body.uid });
+        console.log(uid+' delete friend '+friend);
     });
+    User.update({ email: friend }, { $pull: { 'friends.$.items': uid } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(friend+' delete friend '+uid);
+    });
+    res.json({ uid: friend });
 });
 
 router.post('/newChat', function(req, res, next) {
@@ -93,7 +100,8 @@ router.post('/newChat', function(req, res, next) {
             User.findOneAndUpdate({ email: uid }, { chats: chats, talkWith: friend }, function(err, raw) {
                 if (err)
                     console.error(error);
-                //console.log('The raw response from Mongo was ', raw);
+                console.log('The raw response from Mongo was ', raw);
+                console.log(uid+' create a new chat with '+friend);
             });
             res.json('http://localhost:3000/conversation');
         } else {

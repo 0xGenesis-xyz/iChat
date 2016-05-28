@@ -37,10 +37,5 @@ router.post('/process', function(req, res, next) {
         }
     });
 });
-/*
-router.post('/process', function(req, res, next) {
-    req.session.uid = req.body.uid;
-    res.redirect(303, '/');
-});
-*/
+
 module.exports = router;

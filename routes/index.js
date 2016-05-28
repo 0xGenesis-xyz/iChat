@@ -27,9 +27,10 @@ module.exports = function(io) {
     io.use(iosession(sessionConf));
 
     io.on('connection', function(socket) {
-        console.info('a user connected');
-        console.info(socket.handshake.session.uid);
+        console.log('a user connected');
+        console.log(socket.handshake.session.uid);
         var Message = Models.Message;
+        var Request = Models.Request;
         var uid = socket.handshake.session.uid;
         if (uid) {
             socketHandler.addUser(uid);
@@ -42,7 +43,7 @@ module.exports = function(io) {
         }
 
         socket.on('send', function(info) {
-            console.log('receive chat: '+uid);
+            console.log('receive chat from '+uid);
             var time = new Date();
             Message.create({
                 from: uid,
@@ -57,6 +58,24 @@ module.exports = function(io) {
                 }
             });
             sendMessage(uid, info.to, info.message, time);
+        });
+
+        socket.on('request', function(request) {
+            console.log('receive request from '+uid);
+            var time = new Date();
+            Request.create({
+                from: uid,
+                to: request.uid,
+                message: request.message,
+                time: time,
+                state: 'delivered'
+            }, function(error) {
+                console.log('saved');
+                if (error) {
+                    console.error(error);
+                }
+            });
+            sendRequest(uid, request.uid, request.message, time);
         });
 
         socket.on('disconnect', function(){
@@ -86,6 +105,20 @@ module.exports = function(io) {
             }
         }
 
+        function sendRequest(from, to, message, time) {
+            updateChatList(to, 'Validation@System');
+            var toUser = socketHandler.userOfID(to);
+            if (toUser) {
+                toUser.socket.emit('newRequest', {
+                    who: from,
+                    message: message,
+                    time: time.getHours()+':'+time.getMinutes()
+                });
+            } else {
+                console.log('no receiver');
+            }
+        }
+
         function updateChatList(uid, friend) {
             var User = Models.User;
             User.find({ email: uid }, 'chats', function (err, docs) {
@@ -101,7 +134,8 @@ module.exports = function(io) {
                     User.findOneAndUpdate({ email: uid }, { chats: chats }, function(err, raw) {
                         if (err)
                             console.error(error);
-                        //console.log('The raw response from Mongo was ', raw);
+                        console.log('The raw response from Mongo was ', raw);
+                        console.log('Chat list of '+uid+' is updated');
                     });
                 } else {
                     console.log('wrong email');
