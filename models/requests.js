@@ -10,7 +10,7 @@ var requestSchema = new Schema ({
     to: String,
     message: String,
     time: Date,
-    state: String
+    state: String   // delivered, read, accepted, ignored
 });
 
 module.exports.requestSchema = requestSchema;

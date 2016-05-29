@@ -58,7 +58,7 @@ router.post('/checkRequest', function(req, res, next) {
         console.log('The raw response from Mongo was ', raw);
         console.log(uid+' is now check system message');
     });
-    Request.update({ to: uid }, { state: 'read' }, function (err, raw) {
+    Request.update({ to: uid, state: 'delivered' }, { state: 'read' }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
@@ -83,7 +83,7 @@ router.post('/acceptRequest', function(req, res, next) {
     var friend = req.body.uid;
     var User = Models.User;
     var Request = Models.Request;
-    console.log(uid+friend);
+    // duplicate friend
     User.update({ email: uid }, { $push: { 'friends.0.items': friend } }, function (err, raw) {
         if (err)
             console.error(error);

@@ -10,7 +10,7 @@ var messageSchema = new Schema ({
     to: String,
     message: String,
     time: Date,
-    state: String
+    state: String   // delivered, read
 });
 
 module.exports.messageSchema = messageSchema;

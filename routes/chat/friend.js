@@ -34,6 +34,7 @@ router.post('/addGroup', function(req, res, next) {
     var uid = req.session.uid;
     var newGroup = req.body.newGroup;
     var User = Models.User;
+    // duplicate group
     User.update({ email: uid }, { $push: { friends: { group: newGroup, items: [] }}}, function (err, raw) {
         if (err)
             console.error(error);
