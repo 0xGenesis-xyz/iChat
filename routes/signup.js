@@ -23,7 +23,7 @@ router.post('/process', function(req, res, next) {
             username: req.body.username,
             password: pwd1,
             avatar: 'unknown',
-            friends: [{ "group": "My friends", "items": [] }]
+            friends: [{ group: 'My friends', items: [] }]
         }, function(error) {
             console.log('saved');
             if (error) {

@@ -40,7 +40,7 @@ router.post('/checkMessage', function(req, res, next) {
         console.log('The raw response from Mongo was ', raw);
         console.log(uid+' is now talk with '+friend);
     });
-    Message.update({ from: friend, to: uid }, { state: 'read' }, function (err, raw) {
+    Message.update({ from: friend, to: uid }, { state: 'read' }, { multi: true }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
@@ -58,7 +58,7 @@ router.post('/checkRequest', function(req, res, next) {
         console.log('The raw response from Mongo was ', raw);
         console.log(uid+' is now check system message');
     });
-    Request.update({ to: uid, state: 'delivered' }, { state: 'read' }, function (err, raw) {
+    Request.update({ to: uid, state: 'delivered' }, { state: 'read' }, { multi: true }, function (err, raw) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);

@@ -65,10 +65,9 @@ router.get('/getChatInfo', function(req, res, next) {
                         unread++;
                     }
                 });
-                var time = docs[0].time;
                 res.json({
                     message: docs[0].from+' wants to add you as a friend',
-                    time: time.getHours()+':'+time.getMinutes(),
+                    time: getDisplayTime(docs[0].time),
                     unread: unread
                 });
             } else {
@@ -85,10 +84,9 @@ router.get('/getChatInfo', function(req, res, next) {
                         unread++;
                     }
                 });
-                var time = docs[0].time;
                 res.json({
                     message: docs[0].message,
-                    time: time.getHours()+':'+time.getMinutes(),
+                    time: getDisplayTime(docs[0].time),
                     unread: unread
                 });
             } else {
@@ -121,7 +119,7 @@ router.get('/getChatMessage', function(req, res, next) {
                 from: element.from,
                 to: element.to,
                 message: element.message,
-                time: element.time.getHours()+':'+element.time.getMinutes(),
+                time: getMessageTime(element.time),
                 state: element.state
             });
         });
@@ -137,12 +135,27 @@ router.get('/getFriendRequest', function(req, res, next) {
             requests.push({
                 who: element.from,
                 message: element.message,
-                time: element.time.getHours()+':'+element.time.getMinutes(),
+                time: getDisplayTime(element.time),
                 state: element.state
             });
         });
         res.json(requests);
     });
 });
+
+function getDisplayTime(originalTime) {
+    var timeNow = new Date();
+    var displayTime;
+    if (timeNow.toDateString() == originalTime.toDateString()) {
+        displayTime = originalTime.getHours()+':'+originalTime.getMinutes();
+    } else {
+        displayTime = originalTime.getMonth()+'/'+originalTime.getDate();
+    }
+    return displayTime;
+}
+
+function getMessageTime(originalTime) {
+    return originalTime.getHours()+':'+originalTime.getMinutes()+', '+originalTime.toDateString();
+}
 
 module.exports = router;

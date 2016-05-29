@@ -15,9 +15,9 @@ router.post('/process', function(req, res, next) {
     var password = req.body.password;
     var query;
     if (uid.indexOf('@') == -1) {
-        query = {'username': uid};
+        query = {username: uid};
     } else {
-        query = {'email': uid};
+        query = {email: uid};
     }
 
     var User = Models.User;
