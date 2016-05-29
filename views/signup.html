@@ -53,6 +53,65 @@ Created by Sylvanus on 3/22/16.
     <meta content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=no" name="viewport">
   </head>
   <body class="login1 signup">
+    <style>
+      .myAlert {
+          padding: 0;
+          margin: 0;
+          border: 1px solid transparent;
+          border-radius: 4px;
+          font-size: 12px;
+      }
+    </style>
+    <script>
+      $(document).ready(function() {
+          $('.alert').hide();
+          $('input').keyup(function () {
+              var id = $(this).attr('name');
+              if (id == 'email') {
+                  var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
+                  var emailInput = $(this).val();
+                  if (emailPattern.test(emailInput)) {
+                      $.getJSON('api/checkEmail', { uid: $(this).val() }, function (data, textStatus) {
+                          if (data == 'valid') {
+                              $('#emailAlert').hide();
+                          } else {
+                              $('#emailAlert').html('The email has been registered');
+                              $('#emailAlert').show();
+                          }
+                      });
+                  } else {
+                      $('#emailAlert').html('Invalid email');
+                      $('#emailAlert').show();
+                  }
+              }
+              if (id == 'username') {
+                  $.getJSON('api/checkUsername', { uid: $(this).val() }, function (data, textStatus) {
+                      if (data == 'valid') {
+                          $('#nameAlert').hide();
+                      } else {
+                          $('#nameAlert').show();
+                      }
+                  });
+              }
+              var pwd1 = $('#pwd1').val();
+              var pwd2 = $('#pwd2').val();
+              if (id == 'pwd1') {
+                  if (pwd2 == '' || pwd1 == pwd2) {
+                      $('#pwdAlert').hide();
+                  } else {
+                      $('#pwdAlert').show();
+                  }
+              }
+              if (id == 'pwd2') {
+                  if (pwd1 == pwd2) {
+                      $('#pwdAlert').hide();
+                  } else {
+                      $('#pwdAlert').show();
+                  }
+              }
+          });
+      });
+    </script>
     <div class="login-wrapper">
       <div class="login-container">
         <center>
@@ -61,16 +120,19 @@ Created by Sylvanus on 3/22/16.
         <form method="POST" action="/signup/process">
           <div class="form-group">
             <input name="email" placeholder="Email" type="text" class="form-control">
+            <div id="emailAlert" role="alert" class="alert alert-danger myAlert"></div>
           </div>
           <div class="form-group">
             <input name="username" placeholder="Username" type="text" class="form-control">
+            <div id="nameAlert" role="alert" class="alert alert-danger myAlert">The username has been taken. Please choose another one. Don't worry because you can change it later.</div>
           </div>
           <div class="form-group">
-            <input name="pwd1" placeholder="Password" type="password" class="form-control">
+            <input id="pwd1" name="pwd1" placeholder="Password" type="password" class="form-control">
           </div>
           <div class="form-group">
-            <input name="pwd2" placeholder="Confirm password" type="password" class="form-control">
+            <input id="pwd2" name="pwd2" placeholder="Confirm password" type="password" class="form-control">
             <input type="submit" value="&gt;">
+            <div id="pwdAlert" role="alert" class="alert alert-danger myAlert">Two passwords do not match.</div>
           </div>
           <div class="form-options">
             <label class="checkbox">

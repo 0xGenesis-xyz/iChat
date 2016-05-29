@@ -10,9 +10,31 @@ router.get('/', function(req, res, next) {
     res.json({ 'name': 'sylvanus' });
 });
 
+router.get('/checkEmail', function(req, res, next) {
+    var User = Models.User;
+    User.find({ email: req.query.uid }, function (err, docs) {
+        if (docs.length>0) {
+            res.json('taken');
+        } else {
+            res.json('valid');
+        }
+    });
+});
+
+router.get('/checkUsername', function(req, res, next) {
+    var User = Models.User;
+    User.find({ username: req.query.uid }, function (err, docs) {
+        if (docs.length>0) {
+            res.json('taken');
+        } else {
+            res.json('valid');
+        }
+    });
+});
+
 router.get('/getUserInfo', function(req, res, next) {
     var User = Models.User;
-    User.find({ 'email': req.query.uid }, function (err, docs) {
+    User.find({ email: req.query.uid }, function (err, docs) {
         if (docs.length == 1) {
             res.json({
                 email: docs[0].email,
@@ -78,7 +100,7 @@ router.get('/getChatInfo', function(req, res, next) {
 
 router.get('/getCurrentChat', function(req, res, next) {
     var User = Models.User;
-    User.find({ 'email': req.session.uid }, 'talkWith', function (err, docs) {
+    User.find({ email: req.session.uid }, 'talkWith', function (err, docs) {
         if (docs.length == 1) {
             res.json(docs[0].talkWith);
         } else {

@@ -51,6 +51,63 @@ html
         script(src="javascripts/respond.js" type="text/javascript")
         meta(content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=no" name="viewport")
     body.login1.signup
+        style.
+            .myAlert {
+                padding: 0;
+                margin: 0;
+                border: 1px solid transparent;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+        script.
+            $(document).ready(function() {
+                $('.alert').hide();
+                $('input').keyup(function () {
+                    var id = $(this).attr('name');
+                    if (id == 'email') {
+                        var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
+                        var emailInput = $(this).val();
+                        if (emailPattern.test(emailInput)) {
+                            $.getJSON('api/checkEmail', { uid: $(this).val() }, function (data, textStatus) {
+                                if (data == 'valid') {
+                                    $('#emailAlert').hide();
+                                } else {
+                                    $('#emailAlert').html('The email has been registered');
+                                    $('#emailAlert').show();
+                                }
+                            });
+                        } else {
+                            $('#emailAlert').html('Invalid email');
+                            $('#emailAlert').show();
+                        }
+                    }
+                    if (id == 'username') {
+                        $.getJSON('api/checkUsername', { uid: $(this).val() }, function (data, textStatus) {
+                            if (data == 'valid') {
+                                $('#nameAlert').hide();
+                            } else {
+                                $('#nameAlert').show();
+                            }
+                        });
+                    }
+                    var pwd1 = $('#pwd1').val();
+                    var pwd2 = $('#pwd2').val();
+                    if (id == 'pwd1') {
+                        if (pwd2 == '' || pwd1 == pwd2) {
+                            $('#pwdAlert').hide();
+                        } else {
+                            $('#pwdAlert').show();
+                        }
+                    }
+                    if (id == 'pwd2') {
+                        if (pwd1 == pwd2) {
+                            $('#pwdAlert').hide();
+                        } else {
+                            $('#pwdAlert').show();
+                        }
+                    }
+                });
+            });
         .login-wrapper
             .login-container
                 center
@@ -58,13 +115,16 @@ html
                 form(method="POST" action="/signup/process")
                     .form-group
                         input(name="email" placeholder="Email" type="text").form-control
+                        .alert.alert-danger.myAlert#emailAlert(role="alert")
                     .form-group
                         input(name="username" placeholder="Username" type="text").form-control
+                        .alert.alert-danger.myAlert#nameAlert(role="alert") The username has been taken. Please choose another one. Don't worry because you can change it later.
                     .form-group
-                        input(name="pwd1" placeholder="Password" type="password").form-control
+                        input#pwd1(name="pwd1" placeholder="Password" type="password").form-control
                     .form-group
-                        input(name="pwd2" placeholder="Confirm password" type="password").form-control
+                        input#pwd2(name="pwd2" placeholder="Confirm password" type="password").form-control
                         input(type="submit" value=">")
+                        .alert.alert-danger.myAlert#pwdAlert(role="alert") Two passwords do not match.
                     .form-options
                         label.checkbox
                             input(type="checkbox")
