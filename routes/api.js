@@ -7,6 +7,13 @@ var router = express.Router();
 var Models = require('../models/models');
 
 router.get('/', function(req, res, next) {
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        console.log('mobile');
+    } else {
+        console.log('pc');
+    }
     res.json({ 'name': 'sylvanus' });
 });
 
@@ -53,7 +60,14 @@ router.get('/getUserInfo', function(req, res, next) {
 });
 
 router.get('/getChatInfo', function(req, res, next) {
-    var user = req.session.uid;
+    var user;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        user = req.query.token;
+    } else {
+        user = req.session.uid;
+    }
     var friend = req.query.uid;
     if (friend == 'Validation@System'){
         var Request = Models.Request;
@@ -140,6 +154,30 @@ router.get('/getFriendRequest', function(req, res, next) {
             });
         });
         res.json(requests);
+    });
+});
+
+router.get('/getChatlistByToken', function(req, res, next) {
+    var uid = req.query.token;
+    var User = Models.User;
+    User.find({ email: uid }, 'chats', function (err, docs) {
+        if (docs.length == 1) {
+            res.json({ chats: docs[0].chats });
+        } else {
+            console.log('wrong email');
+        }
+    });
+});
+
+router.get('/getFriendlistByToken', function(req, res, next) {
+    var uid = req.query.token;
+    var User = Models.User;
+    User.find({ email: uid }, 'friends', function (err, docs) {
+        if (docs.length == 1) {
+            res.json({ friends: docs[0].friends });
+        } else {
+            console.log('wrong email');
+        }
     });
 });
 
