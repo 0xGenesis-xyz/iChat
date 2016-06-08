@@ -123,7 +123,14 @@ router.get('/getCurrentChat', function(req, res, next) {
 });
 
 router.get('/getChatMessage', function(req, res, next) {
-    var user = req.session.uid;
+    var user;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        user = req.query.token;
+    } else {
+        user = req.session.uid;
+    }
     var friend = req.query.uid;
     var Message = Models.Message;
     Message.find({ $or: [{ from: user, to: friend }, { from: friend, to: user }] } , null, { sort: {time: 1} }, function (err, docs) {
@@ -137,7 +144,7 @@ router.get('/getChatMessage', function(req, res, next) {
                 state: element.state
             });
         });
-        res.json(messages);
+        res.json({ messages: messages });
     });
 });
 
@@ -153,7 +160,7 @@ router.get('/getFriendRequest', function(req, res, next) {
                 state: element.state
             });
         });
-        res.json(requests);
+        res.json({ requests: requests });
     });
 });
 

@@ -29,9 +29,15 @@ module.exports = function(io) {
     io.on('connection', function(socket) {
         console.log('a user connected');
         console.log(socket.handshake.session.uid);
+        console.log(socket.request._query.token);
         var Message = Models.Message;
         var Request = Models.Request;
-        var uid = socket.handshake.session.uid;
+        var uid;
+        if (socket.request._query.token) {
+            uid = socket.request._query.token;
+        } else {
+            uid = socket.handshake.session.uid;
+        }
         if (uid) {
             socketHandler.addUser(uid);
             socketHandler.setSocket(uid, socket);
@@ -44,6 +50,7 @@ module.exports = function(io) {
 
         socket.on('send', function(info) {
             console.log('receive chat from '+uid);
+            console.log('msg: '+info.message);
             var time = new Date();
             Message.create({
                 from: uid,
@@ -139,7 +146,6 @@ module.exports = function(io) {
                     });
                 } else {
                     console.log('wrong email');
-                    res.redirect(303, '/login');
                 }
             });
         }
