@@ -29,16 +29,4 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.post('/removeChat', function(req, res, next) {
-    var uid = req.session.uid;
-    var friend = req.body.uid;
-    var User = Models.User;
-    User.update({ email: uid }, { $pull: { chats: friend } }, function (err, raw) {
-        if (err)
-            console.error(error);
-        console.log('The raw response from Mongo was ', raw);
-        console.log(uid+' remove the chat with '+friend);
-    });
-});
-
 module.exports = router;

@@ -122,6 +122,25 @@ router.get('/getCurrentChat', function(req, res, next) {
     });
 });
 
+router.post('/removeChat', function(req, res, next) {
+    var uid;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        uid = req.body.token;
+    } else {
+        uid = req.session.uid;
+    }
+    var friend = req.body.uid;
+    var User = Models.User;
+    User.update({ email: uid }, { $pull: { chats: friend } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(uid+' remove the chat with '+friend);
+    });
+});
+
 router.post('/checkMessage', function(req, res, next) {
     var uid;
     var deviceAgent = req.header('user-agent').toLowerCase();
