@@ -164,6 +164,55 @@ router.get('/getFriendRequest', function(req, res, next) {
     });
 });
 
+router.post('/addGroup', function(req, res, next) {
+    var uid;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        uid = req.body.token;
+    } else {
+        uid = req.session.uid;
+    }
+    var newGroup = req.body.newGroup;
+    var User = Models.User;
+    // duplicate group
+    User.update({ email: uid }, { $push: { friends: { group: newGroup, items: [] }}}, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(uid+' add a new group '+newGroup);
+    });
+    res.json({ newGroup: newGroup });
+});
+
+router.post('/changeGroup', function(req, res, next) {
+    var uid;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        uid = req.body.token;
+    } else {
+        uid = req.session.uid;
+    }
+    var friend = req.body.uid;
+    var fromGroup = req.body.fromGroup;
+    var toGroup = req.body.toGroup;
+    var User = Models.User;
+    User.update({ email: uid, 'friends.group': toGroup }, { $push: { 'friends.$.items': friend } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(uid+' add '+friend+' to group '+toGroup);
+    });
+    User.update({ email: uid, 'friends.group': fromGroup }, { $pull: { 'friends.$.items': friend } }, function (err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(uid+' remove '+friend+' from group '+fromGroup);
+    });
+    res.json({ uid: friend, gid: toGroup });
+});
+
 router.get('/getChatlistByToken', function(req, res, next) {
     var uid = req.query.token;
     var User = Models.User;
@@ -185,6 +234,73 @@ router.get('/getFriendlistByToken', function(req, res, next) {
         } else {
             console.log('wrong email');
         }
+    });
+});
+
+router.get('/getGroupListByToken', function (req, res, next) {
+    var uid = req.query.token;
+    var User = Models.User;
+    User.find({ email: uid }, 'friends', function (err, docs) {
+        if (docs.length == 1) {
+            var groups = [];
+            var friends = docs[0].friends;
+            friends.forEach(function (element) {
+                groups.push(element.group);
+            });
+            res.json({ groups: groups });
+        } else {
+            console.log('wrong email');
+        }
+    });
+});
+
+router.post('/changeNicknameByToken', function(req, res, next) {
+    var uid = req.body.token;
+    var User = Models.User;
+    User.findOneAndUpdate({ email: uid }, { name: req.body.name }, function(err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+});
+
+router.post('/changeGenderByToken', function(req, res, next) {
+    var uid = req.body.token;
+    var User = Models.User;
+    User.findOneAndUpdate({ email: uid }, { gender: req.body.gender }, function(err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+});
+
+router.post('/changeBirthdayByToken', function(req, res, next) {
+    var uid = req.body.token;
+    var User = Models.User;
+    User.findOneAndUpdate({ email: uid }, { birthday: req.body.birthday }, function(err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+});
+
+router.post('/changeLocationByToken', function(req, res, next) {
+    var uid = req.body.token;
+    var User = Models.User;
+    User.findOneAndUpdate({ email: uid }, { location: req.body.location }, function(err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
+    });
+});
+
+router.post('/changeWhatsupByToken', function(req, res, next) {
+    var uid = req.body.token;
+    var User = Models.User;
+    User.findOneAndUpdate({ email: uid }, { whatsup: req.body.whatsup }, function(err, raw) {
+        if (err)
+            console.error(error);
+        console.log('The raw response from Mongo was ', raw);
     });
 });
 
