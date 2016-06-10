@@ -6,10 +6,28 @@ var express = require('express');
 var router = express.Router();
 var Models = require('../models/models');
 
+var multer = require('multer');
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/avatars')
+    },
+    filename: function (req, file, cb) {
+        // file name bug
+        cb(null, getUid(req))
+    }
+});
+function fileFilter(req, file, cb) {
+    var words = file.originalname.split('.');
+    var extension = words.pop();
+    if (extension != 'png' && extension != 'jpg' && extension != 'gif') {
+        return cb(new Error('Only png jpg gif are allowed'))
+    }
+    cb(null, true);
+}
+var upload = multer({ storage: storage, fileFilter: fileFilter }).single('avatar');
+
 router.get('/', function(req, res, next) {
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
+    if (getDevice(req)) {
         console.log('mobile');
     } else {
         console.log('pc');
@@ -64,14 +82,7 @@ router.get('/getUserInfo', function(req, res, next) {
 });
 
 router.get('/getChatInfo', function(req, res, next) {
-    var user;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        user = req.query.token;
-    } else {
-        user = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.query.uid;
     if (friend == 'Validation@System'){
         var Request = Models.Request;
@@ -127,14 +138,7 @@ router.get('/getCurrentChat', function(req, res, next) {
 });
 
 router.post('/removeChat', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var User = Models.User;
     User.update({ email: uid }, { $pull: { chats: friend } }, function (err, raw) {
@@ -146,14 +150,7 @@ router.post('/removeChat', function(req, res, next) {
 });
 
 router.post('/checkMessage', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var User = Models.User;
     var Message = Models.Message;
@@ -172,14 +169,7 @@ router.post('/checkMessage', function(req, res, next) {
 });
 
 router.post('/checkRequest', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var User = Models.User;
     var Request = Models.Request;
     User.update({ email: uid }, { talkWith: 'System' }, function (err, raw) {
@@ -197,14 +187,7 @@ router.post('/checkRequest', function(req, res, next) {
 });
 
 router.get('/getChatMessage', function(req, res, next) {
-    var user;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        user = req.query.token;
-    } else {
-        user = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.query.uid;
     var Message = Models.Message;
     Message.find({ $or: [{ from: user, to: friend }, { from: friend, to: user }] } , null, { sort: {time: 1} }, function (err, docs) {
@@ -223,14 +206,7 @@ router.get('/getChatMessage', function(req, res, next) {
 });
 
 router.get('/getFriendRequest', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.query.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var Request = Models.Request;
     Request.find({ to: uid } , null, { sort: {time: -1} }, function (err, docs) {
         var requests = [];
@@ -247,14 +223,7 @@ router.get('/getFriendRequest', function(req, res, next) {
 });
 
 router.post('/acceptRequest', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var User = Models.User;
     var Request = Models.Request;
@@ -280,14 +249,7 @@ router.post('/acceptRequest', function(req, res, next) {
 });
 
 router.post('/ignoreRequest', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var Request = Models.Request;
     Request.update({ from: friend, to: uid }, { state: 'ignored' }, function (err, raw) {
@@ -299,14 +261,7 @@ router.post('/ignoreRequest', function(req, res, next) {
 });
 
 router.post('/addGroup', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var newGroup = req.body.newGroup;
     var User = Models.User;
     // duplicate group
@@ -320,14 +275,7 @@ router.post('/addGroup', function(req, res, next) {
 });
 
 router.post('/changeGroup', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var fromGroup = req.body.fromGroup;
     var toGroup = req.body.toGroup;
@@ -348,14 +296,7 @@ router.post('/changeGroup', function(req, res, next) {
 });
 
 router.post('/newChat', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var User = Models.User;
     User.find({ email: uid }, 'chats', function (err, docs) {
@@ -382,14 +323,7 @@ router.post('/newChat', function(req, res, next) {
 });
 
 router.post('/deleteFriend', function(req, res, next) {
-    var uid;
-    var deviceAgent = req.header('user-agent').toLowerCase();
-    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
-    if (device) {
-        uid = req.body.token;
-    } else {
-        uid = req.session.uid;
-    }
+    var uid = getUid(req);
     var friend = req.body.uid;
     var User = Models.User;
     User.update({ email: uid, 'friends.group': req.body.gid }, { $pull: { 'friends.$.items': friend } }, function (err, raw) {
@@ -405,6 +339,24 @@ router.post('/deleteFriend', function(req, res, next) {
         console.log(friend+' delete friend '+uid);
     });
     res.json({ uid: friend });
+});
+
+router.post('/uploadAvatar', function(req, res, next) {
+    var uid = getUid(req);
+    upload(req, res, function(err) {
+        if (err) {
+            console.error(err);
+        }
+        var User = Models.User;
+        User.findOneAndUpdate({ email: uid }, { avatar: req.file.filename }, function(err, raw) {
+            if (err)
+                console.error(error);
+            console.log('The raw response from Mongo was ', raw);
+        });
+    });
+    if (!getDevice(req)) {
+        res.redirect(303, '/profile');
+    }
 });
 
 router.get('/getChatlistByToken', function(req, res, next) {
@@ -498,8 +450,23 @@ router.post('/changeWhatsupByToken', function(req, res, next) {
     });
 });
 
+router.post('/changePasswordByToken', function(req, res, next) {
+    if (req.body.pwd1 != req.body.pwd2) {
+        console.log('password not consist');
+    } else {
+        var uid = req.body.token;
+        var User = Models.User;
+        User.findOneAndUpdate({ email: uid }, { password: req.body.pwd1 }, function(err, raw) {
+            if (err)
+                console.error(error);
+            console.log('The raw response from Mongo was ', raw);
+        });
+    }
+});
+
 router.post('/checkPasswordByToken', function(req, res, next) {
     var uid = req.body.token;
+    var User = Models.User;
     User.find({ email: uid }, function (err, docs) {
         if (docs.length == 1) {
             if (docs[0].password == req.body.password) {
@@ -526,6 +493,19 @@ function getDisplayTime(originalTime) {
 
 function getMessageTime(originalTime) {
     return originalTime.getHours()+':'+originalTime.getMinutes()+', '+originalTime.toDateString();
+}
+
+function getUid(req) {
+    if (getDevice(req)) {
+        return req.body.token;
+    } else {
+        return req.session.uid;
+    }
+}
+
+function getDevice(req) {
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    return deviceAgent.match(/(iphone|ipad|ipod|android)/);
 }
 
 module.exports = router;

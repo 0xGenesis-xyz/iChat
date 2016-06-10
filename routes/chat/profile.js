@@ -6,25 +6,6 @@ var express = require('express');
 var router = express.Router();
 var Models = require('../../models/models');
 
-var multer = require('multer');
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/avatars')
-    },
-    filename: function (req, file, cb) {
-        cb(null, req.session.uid)
-    }
-});
-function fileFilter(req, file, cb) {
-    var words = file.originalname.split('.');
-    var extension = words.pop();
-    if (extension != 'png' && extension != 'jpg' && extension != 'gif') {
-        return cb(new Error('Only png jpg gif are allowed'))
-    }
-    cb(null, true);
-}
-var upload = multer({ storage: storage, fileFilter: fileFilter }).single('avatar');
-
 router.get('/', function(req, res, next) {
     if (req.session.uid == null) {
         res.redirect('/login');
@@ -75,21 +56,6 @@ router.post('/changePassword', function(req, res, next) {
             console.log('The raw response from Mongo was ', raw);
         });
     }
-    res.redirect(303, '/profile');
-});
-
-router.post('/uploadAvatar', function(req, res, next) {
-    upload(req, res, function(err) {
-        if (err) {
-            console.error(err);
-        }
-        var User = Models.User;
-        User.findOneAndUpdate({ email: req.session.uid }, { avatar: req.file.filename }, function(err, raw) {
-            if (err)
-                console.error(error);
-            console.log('The raw response from Mongo was ', raw);
-        });
-    });
     res.redirect(303, '/profile');
 });
 
