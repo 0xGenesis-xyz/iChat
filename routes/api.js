@@ -17,6 +17,10 @@ router.get('/', function(req, res, next) {
     res.json({ 'name': 'sylvanus' });
 });
 
+router.post('/login', function(req, res, next) {});
+
+router.post('/signup', function(req, res, next) {});
+
 router.get('/checkEmail', function(req, res, next) {
     var User = Models.User;
     User.find({ email: req.query.uid }, function (err, docs) {
@@ -343,6 +347,66 @@ router.post('/changeGroup', function(req, res, next) {
     res.json({ uid: friend, gid: toGroup });
 });
 
+router.post('/newChat', function(req, res, next) {
+    var uid;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        uid = req.body.token;
+    } else {
+        uid = req.session.uid;
+    }
+    var friend = req.body.uid;
+    var User = Models.User;
+    User.find({ email: uid }, 'chats', function (err, docs) {
+        if (docs.length == 1) {
+            var chats = docs[0].chats;
+            for (var i=0; i<chats.length; i++) {
+                if (chats[i] == friend) {
+                    chats.splice(i, 1);
+                    break;
+                }
+            }
+            chats.unshift(friend);
+            User.findOneAndUpdate({ email: uid }, { chats: chats, talkWith: friend }, function(err, raw) {
+                if (err)
+                    console.error(error);
+                console.log('The raw response from Mongo was ', raw);
+                console.log(uid+' create a new chat with '+friend);
+            });
+            res.json('http://localhost:3000/conversation');
+        } else {
+            console.log('wrong email');
+        }
+    });
+});
+
+router.post('/deleteFriend', function(req, res, next) {
+    var uid;
+    var deviceAgent = req.header('user-agent').toLowerCase();
+    var device = deviceAgent.match(/(iphone|ipad|ipod|android)/);
+    if (device) {
+        uid = req.body.token;
+    } else {
+        uid = req.session.uid;
+    }
+    var friend = req.body.uid;
+    var User = Models.User;
+    User.update({ email: uid, 'friends.group': req.body.gid }, { $pull: { 'friends.$.items': friend } }, function (err, raw) {
+        if (err)
+            console.error(err);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(uid+' delete friend '+friend);
+    });
+    User.update({ email: friend }, { $pull: { 'friends.$.items': uid } }, function (err, raw) {
+        if (err)
+            console.error(err);
+        console.log('The raw response from Mongo was ', raw);
+        console.log(friend+' delete friend '+uid);
+    });
+    res.json({ uid: friend });
+});
+
 router.get('/getChatlistByToken', function(req, res, next) {
     var uid = req.query.token;
     var User = Models.User;
@@ -431,6 +495,21 @@ router.post('/changeWhatsupByToken', function(req, res, next) {
         if (err)
             console.error(error);
         console.log('The raw response from Mongo was ', raw);
+    });
+});
+
+router.post('/checkPasswordByToken', function(req, res, next) {
+    var uid = req.body.token;
+    User.find({ email: uid }, function (err, docs) {
+        if (docs.length == 1) {
+            if (docs[0].password == req.body.password) {
+                res.json({ state: 'success' })
+            } else {
+                res.json({ state: 'fail' });
+            }
+        } else {
+            console.log('wrong email');
+        }
     });
 });
 
