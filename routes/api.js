@@ -4,6 +4,7 @@
 
 var express = require('express');
 var router = express.Router();
+var sh = require('shorthash');
 var Models = require('../models/models');
 
 var multer = require('multer');
@@ -12,8 +13,7 @@ var storage = multer.diskStorage({
         cb(null, 'public/avatars')
     },
     filename: function (req, file, cb) {
-        // file name bug
-        cb(null, getUid(req))
+        cb(null, sh.unique(getUid(req)))
     }
 });
 function fileFilter(req, file, cb) {
@@ -35,9 +35,58 @@ router.get('/', function(req, res, next) {
     res.json({ 'name': 'sylvanus' });
 });
 
-router.post('/login', function(req, res, next) {});
+router.post('/login', function(req, res, next) {
+    var uid = req.body.uid;
+    var password = req.body.password;
+    var query;
+    if (uid.indexOf('@') == -1) {
+        query = {username: uid};
+    } else {
+        query = {email: uid};
+    }
 
-router.post('/signup', function(req, res, next) {});
+    var User = Models.User;
+    User.find(query, function (err, docs) {
+        if (docs.length == 1) {
+            if (password == docs[0].password) {
+                console.log('log in');
+                res.json({ state: 'success', token: generateToken(docs[0].email) });
+            } else {
+                console.log('wrong password');
+                res.json({ state: 'fail' });
+            }
+        } else {
+            console.log('wrong email');
+            res.json({ state: 'fail' });
+        }
+    });
+});
+
+router.post('/signup', function(req, res, next) {
+    var email = req.body.email;
+    var username = req.body.username;
+    var pwd1 = req.body.pwd1;
+    var pwd2 = req.body.pwd2;
+    if (pwd1 != pwd2) {
+        res.json({ state: 'fail', error: 'Two passwords do not match.' });
+    } else {
+        var group = [];
+        var User = Models.User;
+        User.create({
+            email: email,
+            username: username,
+            password: pwd1,
+            avatar: 'unknown',
+            friends: [{ group: 'My friends', items: [] }]
+        }, function(error) {
+            console.log('saved');
+            if (error) {
+                console.error(error);
+            }
+        });
+        res.json({ state: 'success', token: generateToken(email) });
+    }
+});
 
 router.get('/checkEmail', function(req, res, next) {
     var User = Models.User;
@@ -82,7 +131,7 @@ router.get('/getUserInfo', function(req, res, next) {
 });
 
 router.get('/getChatInfo', function(req, res, next) {
-    var uid = getUid(req);
+    var user = getUid(req);
     var friend = req.query.uid;
     if (friend == 'Validation@System'){
         var Request = Models.Request;
@@ -187,7 +236,7 @@ router.post('/checkRequest', function(req, res, next) {
 });
 
 router.get('/getChatMessage', function(req, res, next) {
-    var uid = getUid(req);
+    var user = getUid(req);
     var friend = req.query.uid;
     var Message = Models.Message;
     Message.find({ $or: [{ from: user, to: friend }, { from: friend, to: user }] } , null, { sort: {time: 1} }, function (err, docs) {
@@ -342,11 +391,11 @@ router.post('/deleteFriend', function(req, res, next) {
 });
 
 router.post('/uploadAvatar', function(req, res, next) {
-    var uid = getUid(req);
     upload(req, res, function(err) {
         if (err) {
             console.error(err);
         }
+        var uid = getUid(req);
         var User = Models.User;
         User.findOneAndUpdate({ email: uid }, { avatar: req.file.filename }, function(err, raw) {
             if (err)
@@ -497,7 +546,7 @@ function getMessageTime(originalTime) {
 
 function getUid(req) {
     if (getDevice(req)) {
-        return req.body.token;
+        return req.query.token || req.body.token;
     } else {
         return req.session.uid;
     }
@@ -506,6 +555,10 @@ function getUid(req) {
 function getDevice(req) {
     var deviceAgent = req.header('user-agent').toLowerCase();
     return deviceAgent.match(/(iphone|ipad|ipod|android)/);
+}
+
+function generateToken(email) {
+    return email;
 }
 
 module.exports = router;

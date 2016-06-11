@@ -71,7 +71,7 @@ Created by Sylvanus on 3/22/16.
                   var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
                   var emailInput = $(this).val();
                   if (emailPattern.test(emailInput)) {
-                      $.getJSON('api/checkEmail', { uid: $(this).val() }, function (data, textStatus) {
+                      $.getJSON('api/checkEmail', { uid: emailInput }, function (data, textStatus) {
                           if (data == 'valid') {
                               $('#emailAlert').hide();
                           } else {
@@ -85,13 +85,21 @@ Created by Sylvanus on 3/22/16.
                   }
               }
               if (id == 'username') {
-                  $.getJSON('api/checkUsername', { uid: $(this).val() }, function (data, textStatus) {
-                      if (data == 'valid') {
-                          $('#nameAlert').hide();
-                      } else {
-                          $('#nameAlert').show();
-                      }
-                  });
+                  var usernamePattern = /^[a-zA-Z0-9_-]+$/;
+                  var usernameInput = $(this).val();
+                  if (usernamePattern.test(usernameInput)) {
+                      $.getJSON('api/checkUsername', { uid: usernameInput }, function (data, textStatus) {
+                          if (data == 'valid') {
+                              $('#nameAlert').hide();
+                          } else {
+                              $('#nameAlert').html('The username has been taken. Please choose another one. Don\'t worry because you can change it later.');
+                              $('#nameAlert').show();
+                          }
+                      });
+                  } else {
+                      $('#nameAlert').html('Only letters, numbers, hyphens and underlines are allowed.');
+                      $('#nameAlert').show();
+                  }
               }
               var pwd1 = $('#pwd1').val();
               var pwd2 = $('#pwd2').val();
@@ -124,7 +132,7 @@ Created by Sylvanus on 3/22/16.
           </div>
           <div class="form-group">
             <input name="username" placeholder="Username" type="text" class="form-control">
-            <div id="nameAlert" role="alert" class="alert alert-danger myAlert">The username has been taken. Please choose another one. Don't worry because you can change it later.</div>
+            <div id="nameAlert" role="alert" class="alert alert-danger myAlert"></div>
           </div>
           <div class="form-group">
             <input id="pwd1" name="pwd1" placeholder="Password" type="password" class="form-control">
