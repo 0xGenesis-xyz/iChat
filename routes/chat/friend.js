@@ -8,7 +8,7 @@ var Models = require('../../models/models');
 
 router.get('/', function(req, res, next) {
     if (req.session.uid == null) {
-        res.redirect('/login');
+        return res.redirect('/login');
     }
     var User = Models.User;
     User.find({ email: req.session.uid }, 'friends', function (err, docs) {
@@ -20,6 +20,7 @@ router.get('/', function(req, res, next) {
             });
             res.render('chat/friend', {
                 title: 'Contacts',
+                sidebarEmail: req.session.uid,
                 friends: friends,
                 groups: groups
             });

@@ -13,13 +13,14 @@ schedule.scheduleJob({hour: 6, minute: 0, dayOfWeek: 0}, function() {
 
 router.get('/', function(req, res, next) {
     if (req.session.uid == null) {
-        res.redirect('/login');
+        return res.redirect('/login');
     }
     var User = Models.User;
     User.find({ email: req.session.uid }, 'chats', function (err, docs) {
         if (docs.length == 1) {
             res.render('chat/conversation', {
                 title: 'Chats',
+                sidebarEmail: req.session.uid,
                 chats: docs[0].chats
             });
         } else {

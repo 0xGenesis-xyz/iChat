@@ -29,11 +29,13 @@ router.post('/process', function(req, res, next) {
                 res.redirect(303, '/conversation');
             } else {
                 console.log('wrong password');
-                res.redirect(303, '/login');
+                res.send('<script>alert("wrong password")</script>');
+                //res.redirect(303, '/login');
             }
         } else {
             console.log('wrong email');
-            res.redirect(303, '/login');
+            res.send('<script>alert("wrong email")</script>');
+            //res.redirect(303, '/login');
         }
     });
 });
