@@ -90,8 +90,8 @@ router.post('/signup', function(req, res, next) {
 
 router.get('/checkEmail', function(req, res, next) {
     var User = Models.User;
-    User.find({ email: req.query.uid }, function (err, docs) {
-        if (docs.length>0) {
+    User.findOne({ email: req.query.uid }, function (err, user) {
+        if (user) {
             res.json('taken');
         } else {
             res.json('valid');
@@ -101,8 +101,8 @@ router.get('/checkEmail', function(req, res, next) {
 
 router.get('/checkUsername', function(req, res, next) {
     var User = Models.User;
-    User.find({ username: req.query.uid }, function (err, docs) {
-        if (docs.length>0) {
+    User.findOne({ username: req.query.uid }, function (err, user) {
+        if (user) {
             res.json('taken');
         } else {
             res.json('valid');

@@ -118,6 +118,21 @@ html
             });
         .login-wrapper
             .login-container
+                case messages.alert
+                    when 'email'
+                        script.
+                            alert('Invalid email.');
+                    when 'name'
+                        script.
+                            alert('Invalid username.');
+                    when 'uid'
+                        script.
+                            alert('The email or username has been taken.');
+                    when 'pwd'
+                        script.
+                            alert('Two passwords do not match.');
+                    default
+                        h1= messages.alert
                 center
                     h1(style="padding: 15px 0") iChat
                 form(method="POST" action="/signup/process")

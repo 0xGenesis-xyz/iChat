@@ -11,27 +11,44 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/process', function(req, res, next) {
+    var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
+    var usernamePattern = /^[a-zA-Z0-9_-]+$/;
+    var email = req.body.email;
+    var username = req.body.username;
     var pwd1 = req.body.pwd1;
     var pwd2 = req.body.pwd2;
-    if (pwd1 != pwd2) {
+    if (!emailPattern.test(email)) {
+        req.flash('alert', 'email');
+        res.redirect(303, '/signup');
+    } else if (!usernamePattern.test(username)) {
+        req.flash('alert', 'name');
+        res.redirect(303, '/signup');
+    } else if (pwd1 != pwd2) {
+        req.flash('alert', 'pwd');
         res.redirect(303, '/signup');
     } else {
-        var group = [];
         var User = Models.User;
-        User.create({
-            email: req.body.email,
-            username: req.body.username,
-            password: pwd1,
-            avatar: 'unknown',
-            friends: [{ group: 'My friends', items: [] }]
-        }, function(error) {
-            console.log('saved');
-            if (error) {
-                console.error(error);
+        User.findOne({ $or: [{ email: email }, { username: username }] }, function (err, user) {
+            if (user) {
+                req.flash('alert', 'uid');
+                res.redirect(303, '/signup');
+            } else {
+                User.create({
+                    email: email,
+                    username: username,
+                    password: pwd1,
+                    avatar: 'unknown',
+                    friends: [{ group: 'My friends', items: [] }]
+                }, function(error) {
+                    console.log('saved');
+                    if (error) {
+                        console.error(error);
+                    }
+                });
+                req.session.uid = email;
+                res.redirect(303, '/conversation');
             }
         });
-        req.session.uid = req.body.email;
-        res.redirect(303, '/conversation');
     }
 });
 

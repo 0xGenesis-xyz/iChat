@@ -53,6 +53,15 @@ html
     body.login1
         .login-wrapper
             .login-container
+                case messages.alert
+                    when 'uid'
+                        script.
+                            alert('Invalid email or username');
+                    when 'pwd'
+                        script.
+                            alert('Wrong password');
+                    default
+                        h1= messages.alert
                 center
                     h1(style="padding: 25px 0") iChat
                 form(method="POST" action="/login/process")

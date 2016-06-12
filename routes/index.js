@@ -70,6 +70,7 @@ module.exports = function(io) {
         socket.on('request', function(request) {
             console.log('receive request from '+uid);
             var time = new Date();
+            // duplicate request
             Request.create({
                 from: uid,
                 to: request.uid,
