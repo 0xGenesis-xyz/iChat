@@ -32,6 +32,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/editProfile', function(req, res, next) {
     var User = Models.User;
+    // duplicate name
     User.update({ email: req.session.uid }, {
         username: req.body.username,
         gender: req.body.gender,

@@ -21,7 +21,8 @@ router.get('/', function(req, res, next) {
             res.render('chat/conversation', {
                 title: 'Chats',
                 sidebarEmail: req.session.uid,
-                chats: docs[0].chats
+                chats: docs[0].chats,
+                num: docs[0].chats.length
             });
         } else {
             console.log('wrong email');

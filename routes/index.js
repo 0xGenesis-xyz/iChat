@@ -7,7 +7,7 @@ var session = require('express-session');
 var sessionConf = session({
     secret: 'test',
     store: require('../models/models').sessionStore,
-    cookie: { maxAge: 1000*60*60}
+    cookie: { maxAge: 1000*60*60 }
 });
 
 /* GET home page. */

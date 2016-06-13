@@ -53,38 +53,49 @@ router.post('/login', function(req, res, next) {
                 res.json({ state: 'success', token: generateToken(docs[0].email) });
             } else {
                 console.log('wrong password');
-                res.json({ state: 'fail' });
+                res.json({ state: 'fail', error: 'Wrong password' });
             }
         } else {
             console.log('wrong email');
-            res.json({ state: 'fail' });
+            res.json({ state: 'fail', error: 'Invalid email or username' });
         }
     });
 });
 
 router.post('/signup', function(req, res, next) {
+    var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
+    var usernamePattern = /^[a-zA-Z0-9_-]+$/;
     var email = req.body.email;
     var username = req.body.username;
     var pwd1 = req.body.pwd1;
     var pwd2 = req.body.pwd2;
-    if (pwd1 != pwd2) {
+    if (!emailPattern.test(email)) {
+        res.json({ state: 'fail', error: 'Invalid email' });
+    } else if (!usernamePattern.test(username)) {
+        res.json({ state: 'fail', error: 'Invalid username' });
+    } else if (pwd1 != pwd2) {
         res.json({ state: 'fail', error: 'Two passwords do not match.' });
     } else {
-        var group = [];
         var User = Models.User;
-        User.create({
-            email: email,
-            username: username,
-            password: pwd1,
-            avatar: 'unknown',
-            friends: [{ group: 'My friends', items: [] }]
-        }, function(error) {
-            console.log('saved');
-            if (error) {
-                console.error(error);
+        User.findOne({ $or: [{ email: email }, { username: username }] }, function (err, user) {
+            if (user) {
+                res.json({ state: 'fail', error: 'The email or username has been taken.' });
+            } else {
+                User.create({
+                    email: email,
+                    username: username,
+                    password: pwd1,
+                    avatar: 'unknown',
+                    friends: [{ group: 'My friends', items: [] }]
+                }, function(error) {
+                    console.log('saved');
+                    if (error) {
+                        console.error(error);
+                    }
+                });
+                res.json({ state: 'success', token: generateToken(email) });
             }
         });
-        res.json({ state: 'success', token: generateToken(email) });
     }
 });
 
