@@ -50,7 +50,13 @@ router.post('/login', function(req, res, next) {
         if (docs.length == 1) {
             if (password == docs[0].password) {
                 console.log('log in');
-                res.json({ state: 'success', token: generateToken(docs[0].email) });
+                res.json({
+                    state: 'success',
+                    token: generateToken(docs[0].email),
+                    email: docs[0].email,
+                    username: docs[0].username,
+                    avatar: docs[0].avatar
+                });
             } else {
                 console.log('wrong password');
                 res.json({ state: 'fail', error: 'Wrong password' });
@@ -86,7 +92,7 @@ router.post('/signup', function(req, res, next) {
                     username: username,
                     password: pwd1,
                     avatar: 'unknown',
-                    friends: [{ group: 'My friends', items: [] }]
+                    friends: [{ group: 'MyFriends', items: [] }]
                 }, function(error) {
                     console.log('saved');
                     if (error) {
@@ -150,10 +156,11 @@ router.get('/getChatInfo', function(req, res, next) {
             if (docs.length>0) {
                 var unread = 0;
                 docs.forEach(function (element) {
-                    if (element.to == user && element.state == 'unread') {
+                    if (element.to == user && element.state == 'delivered') {
                         unread++;
                     }
                 });
+                // should display username
                 res.json({
                     message: docs[0].from+' wants to add you as a friend',
                     time: getDisplayTime(docs[0].time),
@@ -169,7 +176,7 @@ router.get('/getChatInfo', function(req, res, next) {
             if (docs.length>0) {
                 var unread = 0;
                 docs.forEach(function (element) {
-                    if (element.to == user && element.state == 'unread') {
+                    if (element.to == user && element.state == 'delivered') {
                         unread++;
                     }
                 });
@@ -325,6 +332,7 @@ router.post('/addGroup', function(req, res, next) {
     var newGroup = req.body.newGroup;
     var User = Models.User;
     // duplicate group
+    // space bug
     User.update({ email: uid }, { $push: { friends: { group: newGroup, items: [] }}}, function (err, raw) {
         if (err)
             console.error(error);
@@ -377,7 +385,7 @@ router.post('/newChat', function(req, res, next) {
             });
             res.json('http://localhost:3000/conversation');
         } else {
-            console.log('wrong email');
+            console.log('cannot find ', uid);
         }
     });
 });
@@ -412,6 +420,7 @@ router.post('/uploadAvatar', function(req, res, next) {
             if (err)
                 console.error(error);
             console.log('The raw response from Mongo was ', raw);
+            res.json({ avatar: req.file.filename });
         });
     });
     if (!getDevice(req)) {
@@ -426,7 +435,7 @@ router.get('/getChatlistByToken', function(req, res, next) {
         if (docs.length == 1) {
             res.json({ chats: docs[0].chats });
         } else {
-            console.log('wrong email');
+            console.log('cannot find ', uid);
         }
     });
 });
@@ -438,7 +447,7 @@ router.get('/getFriendlistByToken', function(req, res, next) {
         if (docs.length == 1) {
             res.json({ friends: docs[0].friends });
         } else {
-            console.log('wrong email');
+            console.log('cannot find ', uid);
         }
     });
 });
@@ -455,7 +464,7 @@ router.get('/getGroupListByToken', function (req, res, next) {
             });
             res.json({ groups: groups });
         } else {
-            console.log('wrong email');
+            console.log('cannot find ', uid);
         }
     });
 });
@@ -535,7 +544,7 @@ router.post('/checkPasswordByToken', function(req, res, next) {
                 res.json({ state: 'fail' });
             }
         } else {
-            console.log('wrong email');
+            console.log('cannot find ', uid);
         }
     });
 });

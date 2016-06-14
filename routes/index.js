@@ -68,6 +68,7 @@ module.exports = function(io) {
         });
 
         socket.on('request', function(request) {
+            // by username bug
             console.log('receive request from '+uid);
             var time = new Date();
             // duplicate request
@@ -146,7 +147,7 @@ module.exports = function(io) {
                         console.log('Chat list of '+uid+' is updated');
                     });
                 } else {
-                    console.log('wrong email');
+                    console.log('cannot find ', uid);
                 }
             });
         }
