@@ -16,8 +16,6 @@ function setSocket(uid, socket) {
     if (index != -1) {
         userList[index].socket = socket;
     }
-    console.log('user list now: ');
-    console.log(userList);
 }
 
 function deleteSocket(uid) {
@@ -28,6 +26,8 @@ function deleteSocket(uid) {
 }
 
 function userOfID(uid) {
+    console.log('user list now: ');
+    console.log(userList);
     var index = findUser(uid);
     if (index == -1) {
         return null;

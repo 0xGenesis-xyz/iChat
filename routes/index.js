@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
     id = req.session.uid;
     socketHandler.addUser(id);
   } else {
-    res.redirect(303, '/login');
+    return res.redirect(303, '/login');
   }
   res.render('index', { 'ID': id });
 });
@@ -49,7 +49,7 @@ module.exports = function(io) {
         }
 
         socket.on('send', function(info) {
-            console.log('receive chat from '+uid);
+            console.log('receive chat from '+uid+' to '+info.to);
             console.log('msg: '+info.message);
             var time = new Date();
             Message.create({
